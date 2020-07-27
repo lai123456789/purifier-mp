@@ -1,0 +1,45 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+}
+.address-edit-ctner {
+   .ade-same {
+       height: rpx(74);
+       position: relative;
+       @include borderBottomOnePx;
+       display: flex;
+       align-items: center;
+       padding: 0 rpx(46);
+       .ade-a {
+           width: rpx(130);
+       }
+       .ade-b {
+           flex: 1;
+           input {
+               border-radius: 0;
+               background: #FFF;
+           }
+       }
+       &.switch {
+         height: rpx(100);
+         .ade-b {
+            text-align: right
+         }
+       }
+       .ade-c {
+           width: rpx(11);
+           height: rpx(18);
+       }
+   }
+   .icx-btn-same-cancel,
+   .icx-btn-same-sure {
+       width: 70%;
+       margin-left: 15%;
+       border-radius: rpx(31);
+   }
+   .icx-btn-same-sure {
+       margin-top: rpx(48);
+       margin-bottom: rpx(24);
+   }
+}

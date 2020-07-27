@@ -1,0 +1,48 @@
+<template>
+  <view class='about-ctner'>
+    <view class="word word-title word-b">水质指标介绍</view>
+    <view class="word" style="color:#333333;font-weight: bold">
+      TDS≤1000MG/L
+    </view>
+    <view class="word">
+      每升水中所含溶解性固体的质量，主要成分是水中Ca2+(钙离子)、Mg2+(镁离子)、Na+(钠离子)、K+(钾离子)等离子的浓度。TDS值越高，水中含有的溶解物越多。
+    </view>
+    <view class="word" style="margin-top: 40rpx;color:#333333;font-weight: bold">
+      TOC≤5MG/L
+    </view>
+    <view class="word">
+      每升水中所含有机碳的质量，TOC值越高，水中有机污染物含量越高。
+    </view>
+    <view class="word">
+      TOC超标，说明水中的细菌、病毒、抗菌药物、化学农药、多环芳烃有机物等物质超标。
+    </view>
+    <view class="word">
+      健康威胁：将引起人呕吐、腹泻、肝胆损伤，神经、免疫系统受损等。
+    </view>
+    <view class="word"  style="margin-top: 40rpx;color:#333333;font-weight: bold">
+      COD≤3MG/L
+    </view>
+    <view class="word">
+      每升水中需要被氧化的还原性物质的量，COD值越高，水中受还原性物质污染的程度越高。
+    </view>
+    <view class="word">
+      COD超标，说明生活污水、各种工业废水、水中腐殖质等的水中耗氧量物质超标。
+    </view>
+    <view class="word">
+      健康威胁：这些有机物中，相当一部分是环境激素，又称内分泌干扰物。环境激素会让人免疫力降低、影响人的生育能力、导致癌症、对神经系统产生干扰。消化道疾病等与耗氧量呈显著的相关。
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class WaterTarget extends wepy.page {
+  config = {
+    navigationBarTitleText: '水质指标'
+  };
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

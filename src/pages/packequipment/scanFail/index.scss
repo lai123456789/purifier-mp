@@ -1,0 +1,44 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+}
+.scan-ctner{
+   .index{
+     width: 100%;
+     view{
+       text-align: center;
+     }
+     .mg1{
+       margin-top: rpx(30);
+       image{
+         width: rpx(168);
+         height: rpx(161);
+       }
+     }
+     .w1{
+       color: #333333;
+       font-size: rpx(30);
+       line-height: rpx(40);
+     }
+     .w2{
+       margin-top: rpx(50);
+     }
+     .btn1{
+       display: flex;
+       justify-content: center;
+       margin-top: rpx(40);
+       .icx-btn-colorBg-whiteText{
+         width: rpx(180);
+         height: rpx(60);
+       }
+     }
+     .w2{
+       view{
+         font-size: rpx(24);
+         color: #999999;
+         line-height: rpx(40);
+       }
+     }
+   }
+}

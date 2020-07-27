@@ -1,0 +1,78 @@
+@import '../../common/css/rpx.scss';
+@import '../../common/css/const.scss';
+@import '../../common/css/mixin.scss';
+/* 自定义模态框 start */
+.modal-mask { //阴影
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: 0.5;
+  overflow: hidden;
+  z-index: 2147483640;
+  color: #fff;
+}
+.modal-content { //弹框
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  z-index: 2147483647;
+  overflow: scroll;
+  overflow-x: hidden;
+  background: #fff;
+  border-radius: rpx(15);
+  width: rpx(600);
+  .content-exchang{
+    .btn-content {
+      //display: flex;
+      //padding: rpx(30);
+      //justify-content: space-around;
+      .m-item{
+        margin: rpx(20);
+        border-radius: rpx(10);
+        view:nth-of-type(1){
+          font-size: rpx(34);
+
+        }
+        view:nth-of-type(2){
+          image{
+            width: rpx(100);
+            height: rpx(80);
+          }
+        }
+      }
+      .activeQ{
+        border:rpx(2) solid $color-word-alarm;
+      }
+    }
+    .btn-bottom{
+      width: 100%;
+      display: flex;
+      button{
+        width: 50%;
+        height: rpx(70);
+        line-height: rpx(62);
+        color: #FFF;
+        border-radius: rpx(8);
+        font-size: rpx(26);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      button:nth-of-type(1){
+        background: #EEEEEE;
+        color: #666666;
+      }
+      button:nth-of-type(2){
+        background: $color-word-alarm;
+      }
+    }
+  }
+
+}
+
+/* 自定义模态框 end */
+

@@ -1,0 +1,137 @@
+@import './const.scss';
+@import './rpx.scss';
+// ===== button 伪类边框去掉 icx=====
+button.icx-clear-after-border::after{
+    // border: 1px solid rbag(0,0,0,0.2);
+    border: 0;
+}
+
+// ===== input 公共样式 =====
+.icx-placeholder{
+    color: $color-input-placeholder;
+    font-size: rpx(24);
+}
+input[class~="icx-input"]{
+    color: $color-input;
+    font-size: rpx(24);
+    background: red;
+    color:#444;
+    background:#F6F6F6;
+    padding:0 rpx(16);
+    border-radius: rpx(30);
+    letter-spacing: rpx(2);
+    height: rpx(60);
+}
+textarea[class~="icx-input"]{
+    color: $color-input;
+    font-size: rpx(24);
+    background:#F6F6F6;
+    width: 100%;
+    padding:rpx(15) rpx(15);
+    box-sizing: border-box;
+}
+// hover-class
+.icx-click-hover{
+    opacity: 0.8;
+}
+// 公共样式
+button.icx-btn::after {
+  border: 0;
+}
+// 提交 保存按钮
+.icx-btn-submit{
+    background: $color-word-three;
+    border-radius: 6px;
+    height: rpx(90);
+    line-height: rpx(90);
+    text-align: center;
+    font-size:rpx(26);
+    color: #FFF;
+}
+
+// 公共样式
+button.icx-btn-same-sure::after {
+  border: 0;
+}
+button.icx-btn-same-cancel::after {
+  border: 0;
+}
+button.icx-btn-same-sure{
+  height: rpx(62);
+  line-height: rpx(62);
+  background:$color-word-alarm;
+  color: #FFF;
+  border-radius: rpx(8);
+  font-size: rpx(26);
+}
+button.icx-btn-same-cancel{
+  height: rpx(62);
+  line-height: rpx(62);
+  font-size: rpx(26);
+  background: #FFF;
+  color: $color-word-alarm;
+  border: rpx(1) solid $color-word-alarm;
+}
+.icx-btn-whiteBg-colorText{ //白色背景橙色字体
+  background:#FFF;
+  color: $color-word-alarm;
+  border-radius: rpx(8);
+  font-size: rpx(26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icx-btn-whiteBg-colorText::after{
+  border: 0 !important;
+}
+.icx-btn-colorBg-whiteText{ //橙色背景白色字体
+  background:$color-word-alarm;
+  color: #FFF;
+  border-radius: rpx(8);
+  font-size: rpx(26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icx-btn-colorBg-whiteText::after{
+  border: 0 !important;
+}
+.wxParse-p image {
+  width: 100%;
+  vertical-align:top;
+}
+.wxParse-p view,
+.wxParse-p text {
+  line-height: 1.6
+}
+.no-data-tip {
+  height: rpx(40);
+  line-height: rpx(40);
+  text-align: center;
+  margin-top: rpx(20);
+}
+
+// 滚动条设置
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+ //::-webkit-scrollbar
+ //{
+ //    width: 10rpx;
+ //    height: 10rpx;
+ //    background-color: red;
+ //}
+
+// /*定义滚动条轨道 内阴影+圆角*/
+// ::-webkit-scrollbar-track
+// {
+//     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+//     border-radius: 10px;
+//     background-color: #F5F5F5;
+// }
+
+// /*定义滑块 内阴影+圆角*/
+// ::-webkit-scrollbar-thumb
+// {
+//     border-radius: 10px;
+//     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+//     background-color: #555;
+// }

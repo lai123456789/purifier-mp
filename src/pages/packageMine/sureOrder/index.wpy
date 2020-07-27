@@ -1,0 +1,213 @@
+<template>
+  <view class='sure-order-ctner'>
+    <view class="sure-order-inner">
+        <view class="address-outer" @tap='toChoiceAddressA'>
+          <image src='../../../images/location_a.png'></image>
+          <text>{{addressStr ? addressStr : '请选择地址'}}</text>
+          <image src='../../../images/unfold.png'></image>
+        </view>
+        <view class="order-outer">
+          <view class="sure-same-outer goods-outer">
+            <view class='cat-m'>
+              <image src='{{orderDetailObj.goodsIco}}' />
+            </view>
+            <view class="cat-m-t">
+              <view class='goods-name'>
+                <text wx:if="{{goodsId}}">{{orderDetailObj.goodsName}}</text>
+                <text wx:if="{{orderId}}">{{orderDetailObj.name}}</text>
+              </view>
+              <view class='goods-des'>
+                <text>￥{{price}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="sub-same s-type">
+            <text>配送方式</text>
+            <text>快递 包邮</text>
+          </view>
+
+          <view class="sub-same s-word">
+            <text>订单备注：</text>
+            <input bindinput="bindReplaceInput" maxlength='200' class='icx-input' placeholder-class='icx-placeholder' placeholder="点击给商家留言" />
+          </view>
+          <view class="order-num-outer">
+            <view class="q3">
+              <text wx:if="{{goodsId}}">共{{orderDetailObj.count}}件 小计：</text> <!--  合计:-->
+              <text wx:if="{{orderId}}">共{{orderGoodsNum}}件 小计：</text> <!--  合计:-->
+              <text class="q-3">￥{{price}}</text>
+            </view>
+          </view>
+        </view>
+    </view>
+    <view class="sure-order-bnt" wx:if="{{key == 1 || goodsId}}"> <!--当订单进入页面为待支付或者从首页立即购买进入的时候显示-->
+      <text>合计：</text>
+      <text>￥{{payAmount}}</text>
+      <view @tap='submitOrderA'  hover-class='icx-click-hover'>提交订单</view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import SureCom from '@/components/SureGoodsCom/index'
+import {
+  apiFindOrderDetailF,
+  apiPayCreateF,
+  apiFindDefAddressF,
+  apiGetAccountMoneyF, apiSubmitSaveF,apiGetOrderInfoF
+} from '../../../services/mine/index';
+import miniPro from '@/utils/wepy-pro.js';
+import { apiGetUserInfoF } from '../../../services/memberIntegral';
+
+export default class SureOrder extends wepy.page {
+  config = {
+    navigationBarTitleText: '确认订单',
+    usingComponents: {
+      // 'van-action-sheet': '../../../components/vant/action-sheet/index',
+    }
+  };
+  components = {
+    SureCom: SureCom
+  };
+  data = {
+    goodsId:'',
+    remark:"",
+    orderId: '',
+    orderDetailArr: [],
+    orderDetailObj: {},
+    addressStr: '',
+    addressId: '',
+    tempEcNo:'',
+    payAmount:'',
+    price:'',
+    orderGoodsNum:'',
+    key:''
+  };
+  methods = {
+    bindReplaceInput(e){
+      this.remark = e.detail.value
+    },
+    specPopA(){
+      this.showGoodsPop = false;
+    },
+    submitOrderA() {
+      let goodsId = this.goodsId
+      let orderId = this.orderId
+      this.apiSubmitSaveFA(this.apiSubmitSaveFA.bind(this))
+    },
+    toChoiceAddressA() {
+      wepy.navigateTo({ url: `/pages/packageMine/addressList/index` })
+    },
+  };
+
+  apiFindDefAddressFA(fun) {  //拉取地址 姓名 联系方式
+    apiFindDefAddressF(fun).then((result) => {
+      if(result.province){
+        this.addressStr = `${result.province} ${result.city} ${result.district}`
+      }else{
+        this.addressStr = ''
+      }
+      this.addressId = result.id
+      wepy.$instance.globalData.addressObj.addressStr = ''
+      wepy.$instance.globalData.addressObj.addressId = ''
+      this.$apply()
+    }).catch(() => { });
+  }
+  apiSubmitSaveFA(fun) {
+    let paramsData
+    if(this.orderId){ //我的订单详情页参数
+      paramsData = {
+        orderMasterId: this.orderId,
+        addressId: this.addressId,
+        remark: this.remark//备注
+      }
+    }
+    if (this.goodsId){ //首页立即购买参数
+      paramsData = {
+        tempEcNo: this.tempEcNo,
+        addressId: this.addressId,
+        used: false,//是否使用过净水器
+        inUsing: false,//是否正在使用净水器
+        remark: this.remark//备注
+      }
+    }
+    apiSubmitSaveF(paramsData, fun).then(msg =>{
+      let data = msg
+      miniPro.requestPayment(data.payInfo).then((result) => {
+        miniPro.showToast('支付成功')
+        setTimeout(() => {
+          wepy.redirectTo({ url: `/pages/packageMine/paySuccess/index` })
+        }, 1500)
+      }).catch(() => {
+        miniPro.showToast('支付失败')
+        setTimeout(() => {
+          wepy.redirectTo({ url: `/pages/packageMine/myOrder/index` })
+          // wepy.navigateTo({ url: `/pages/packageMine/payFail/index` })
+        }, 1000)
+      });
+    }).catch(() => { });
+  }
+  events = {
+    'order-detail-input': (value, index) => {
+      let list = this.params.orderList
+      list[index].remarks = value
+      console.log(value)
+      this.$apply()
+    },
+  }
+  apiFindOrderDetailA(fun) {
+    let self = this
+    let dataBase = {
+      prepareType:1,//1-表示下单 2-试用
+      goodsId:this.goodsId// 申请试用商品id
+    };
+    apiFindOrderDetailF(dataBase, fun).then((result) => {
+      self.orderDetailObj = result.goodsInfo
+      console.log(self.orderDetailObj)
+      self.tempEcNo = result.tempEcNo
+      self.price = (result.goodsInfo.price/100).toFixed(2)
+      self.payAmount = (result.payAmount/100).toFixed(2)
+      self.$apply()
+    }).catch(() => { });
+  }
+  apiGetOrderInfoA(fun) {
+    let self = this
+    apiGetOrderInfoF(this.orderId, fun).then((result) => {
+      self.orderDetailObj = result.goodsInfo
+      self.tempEcNo = result.tempEcNo
+      self.orderGoodsNum = result.goodsNum
+      self.price = (result.goodsInfo.price/100).toFixed(2)
+      self.payAmount = (result.payAmount/100).toFixed(2)
+      if(result.address.province){
+        self.addressStr = `${result.address.province} ${result.address.city} ${result.address.district}`
+      }else{
+        self.addressStr = ''
+      }
+      self.addressId = result.address.originAddressId
+      self.$apply()
+    }).catch(() => { });
+  }
+
+  onLoad(option) {
+    if(option.goodsId){ //首页立即购买进来的
+      this.apiFindDefAddressFA(this.apiFindDefAddressFA.bind(this)) //拉取默认地址
+      this.goodsId = option.goodsId
+      this.apiFindOrderDetailA(this.apiFindOrderDetailA.bind(this)) //收银台 prepare 接口 获取tempEcNo
+    }
+    if(option.orderId || option.key){ //我的订单列表进来的
+      this.orderId = option.orderId
+      this.key = option.key
+      this.apiGetOrderInfoA(this.apiGetOrderInfoA.bind(this))//查询我的订单详情
+    }
+  }
+  onShow() {
+    let { addressStr, addressId } = wepy.$instance.globalData.addressObj
+    if (addressId) {
+      this.addressStr = addressStr
+      this.addressId = addressId
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

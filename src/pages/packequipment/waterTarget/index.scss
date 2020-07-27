@@ -1,0 +1,21 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+}
+.about-ctner{
+  padding: rpx(12) rpx(30) rpx(12) rpx(35);
+  .word {
+    line-height: rpx(40);
+    font-size: rpx(26);
+    margin-bottom: rpx(4);
+    text{
+      font-size: rpx(26);
+    }
+  }
+  .word-title {
+    text-align: center;
+    font-size: rpx(30);
+    margin: rpx(15) 0;
+  }
+}

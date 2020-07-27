@@ -1,0 +1,331 @@
+<template>
+  <view class="cat-item-ctner" >
+    <view class="order-status-order">
+        <view class="A"  wx:if="{{swiperIndex == 0}}">
+          <text style="margin-left: 20rpx;color: #333333;font-size: 22rpx;">{{item.companyName}} </text><!-- 商家名  例如全新厨房智能净水器-->
+          <image src="../../images/right.png" style="width: 12rpx;height: 12rpx"></image>
+        </view> <!--这里显示售后申请-->
+      <block wx:if="{{swiperIndex !== 0}}"><!-- 如果是处理中  显示这个服务单号跟退货按钮  否则显示上面的 -->
+        <view class="B">
+          <text style="margin-left: 20rpx;color: #333333;font-size: 22rpx;">售后单号：{{item.afterSaleNo}} </text>
+        </view>
+        <view style="flex: 1;text-align: right">
+          <image wx:if="{{item.afterSaleType == 1}}" src="../../images/close.png" style="width: 28rpx;height: 25rpx;margin-right: 7rpx"></image>
+          <image wx:if="{{item.afterSaleType == 2}}" src="../../images/tuimoney.png" style="width: 28rpx;height: 25rpx;margin-right: 7rpx"></image>
+          <image wx:if="{{item.afterSaleType == 3}}" src="../../images/tui.png" style="width: 28rpx;height: 25rpx;margin-right: 7rpx"></image>
+          <image wx:if="{{item.afterSaleType == 4}}" src="../../images/chang.png" style="width: 28rpx;height: 25rpx;margin-right: 7rpx"></image>
+          <image wx:if="{{item.afterSaleType == 5}}" src="../../images/bu.png" style="width: 28rpx;height: 25rpx;margin-right: 7rpx"></image>
+          <text style="font-weight: bold;" wx:if="{{item.afterSaleType == 1}}">取消订单</text>
+          <text style="font-weight: bold;" wx:if="{{item.afterSaleType == 2}}">仅退款</text>
+          <text style="font-weight: bold;" wx:if="{{item.afterSaleType == 3}}">退货退款</text>
+          <text style="font-weight: bold;" wx:if="{{item.afterSaleType == 4}}">换货</text>
+          <text style="font-weight: bold;" wx:if="{{item.afterSaleType == 5}}">补发</text>
+        </view>
+      </block> <!--这里显示处理中、待评价、申请记录 -->
+    </view>
+    <view class="goods-outer" wx:if="{{swiperIndex == 0}}"> <!--这里显示可售后申请的商品 -->
+      <view class="goods-cat">
+        <view class='cat-m'>
+          <image src='{{item.goodsIco}}' />
+        </view>
+        <view class="cat-m-t">
+          <view class='goods-name'>
+            <text>{{item.goodsName}}</text>
+          </view>
+          <view class='goods-des'>
+            <text><text wx:if="{{item.goodsColor}}">颜色：{{item.goodsColor}}</text></text>
+          </view>
+          <view class='goods-des'>
+            <text style="color: #666666;font-size: 20rpx">数量： {{item.goodsNumber}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="serve-text" wx:if="{{swiperIndex !== 0}}">
+        <!-- afterSaleType： 1-取消订单 2-售后退款；3-退货退款；4-换货；5-补发-->
+        <!--        a、取消订单和售后退款（仅退款）的state显示一样  对应显示及操作按钮   根据afterSaleType的不同来对应显示不同的state以及操作-->
+        <!--        1-待审核；2-待退款；3-退款中；4-退款完成；5-退款失败;-->
+        <!--        b、退货退款的state-->
+        <!--        1-待审核；2-待处理；3-退款中；4-退款成功;5-退款失败;6-买家发货;7-卖家签收;8-关闭。状态为2，用户可以填写物流单号进行发货。状态为6，用户可以查看物流动态-->
+        <!--        c、换货的state-->
+        <!--        1-待审核；2-待处理；6-买家发货;7-卖家签收;8-关闭(买家超时未处理);9-卖家发货;10-买家签收。状态为2，用户可以填写物流单号进行发货。状态为6/9，用户可以查看物流动态-->
+        <block wx:if="{{item.afterSaleType}}"> <!--afterSaleType：1-取消订单 2-售后退款；3-退货退款；4-换货；5-补发-->
+          <view wx:if="{{item.state == 1}}">待审核</view>
+          <view wx:if="{{item.state == 2 && item.afterSaleType == 3}}">待处理</view>
+          <view wx:if="{{item.state == 2 && item.afterSaleType == 4}}">待处理</view>
+          <view wx:if="{{item.state == 2}}">待退款</view>
+          <view wx:if="{{item.state == 3}}">退款中</view>
+          <view wx:if="{{item.state == 4}}">退款完成</view>
+          <view wx:if="{{item.state == 5}}">退款失败</view>
+          <view wx:if="{{item.state == 6 && item.afterSaleType == 3}}">买家发货</view>
+          <view wx:if="{{item.state == 6 && item.afterSaleType == 4}}">买家发货</view>
+          <view wx:if="{{item.state == 7}}">卖家签收</view>
+          <view wx:if="{{item.state == 8}}">关闭</view>
+          <view wx:if="{{item.state == 9}}">卖家发货</view>
+          <view wx:if="{{item.state == 10}}">买家签收</view>
+        </block>
+        <view>您的服务单已申请成功，待售后审核中</view>
+      </view>
+      <view class="order-button-outer">
+        <view  @tap="afterSaleApply({{item.id}})" class="order-btnJoinCart"  wx:if="{{swiperIndex == 0}}">申请售后</view> <!-- 当前页面只显示这个按钮 -->
+      </view>
+    </view> <!--这里显示售后申请 对应上面-->
+    <view class="goods-outer" wx:if="{{swiperIndex !== 0}}">  <!--这里显示处理中、待评价、申请记录 对应上面 -->
+      <view class="goods-cat">
+        <view class='cat-m'>
+          <image src='{{item.afterSaleDetails[0].goodsIco}}' />
+        </view>
+        <view class="cat-m-t">
+          <view class='goods-name'>
+            <text>{{item.afterSaleDetails[0].goodsName}}</text>
+          </view>
+          <view class='goods-des'>
+            <text><text wx:if="{{item.afterSaleDetails[0].colorName}}">颜色：{{item.afterSaleDetails[0].colorName}}</text></text>
+          </view>
+          <view class='goods-des'>
+            <text style="color: #666666;font-size: 20rpx">数量： {{item.num}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="serve-text" wx:if="{{swiperIndex !== 0}}">
+<!--        item.afterSaleDetails[0].state 如下-->
+<!--        a、取消订单和售后退款（仅退款）的state显示一样  对应显示及操作按钮   根据afterSaleType的不同来对应显示不同的state以及操作-->
+<!--          1-待审核；2-待退款；3-退款中；4-退款完成；5-退款失败;-->
+<!--        b、退货退款的state-->
+<!--          1-待审核；2-待处理；3-退款中；4-退款成功;5-退款失败;6-买家发货;7-卖家签收;8-关闭。状态为2，用户可以填写物流单号进行发货。状态为6，用户可以查看物流动态-->
+<!--        c、换货的state-->
+<!--          1-待审核；2-待处理；6-买家发货;7-卖家签收;8-关闭(买家超时未处理);9-卖家发货;10-买家签收。状态为2，用户可以填写物流单号进行发货。状态为6/9，用户可以查看物流动态-->
+<!--        d、补发的state-->
+<!--        1-待审核；2-待处理;8-关闭(买家超时未处理);9-卖家发货;10-买家签收。状态为9，用户可以查看物流动态-->
+
+          <!--afterSaleType字段：1-取消订单 2-售后退款；3-退货退款；4-换货；5-补发-->
+
+          <view wx:if="{{item.state == 1 && item.afterSaleType !== 1}}">待审核</view> <!-- 取消订单类型之外的三种售后类型 提示状态信息-->
+        <block wx:if="{{item.afterSaleType ==1}}"> <!--取消订单 的提示信息-->
+          <view wx:if="{{item.state == 1}}">待审核</view>
+          <view wx:if="{{item.state == 2}}">商家同意</view>
+          <view wx:if="{{item.state == 3}}">商家拒绝</view>
+          <view wx:if="{{item.state == 4}}">已完结</view>
+        </block>
+          <block wx:if="{{item.afterSaleType == 2}}"> <!-- 仅退款 提示状态信息-->
+            <view wx:if="{{item.state == 2}}">审核通过</view>
+            <view wx:if="{{item.state == 3}}">退款失败</view>
+            <view wx:if="{{item.state == 4}}">退款完成</view>
+          </block>
+          <block wx:if="{{item.afterSaleType == 3}}"> <!-- 退货退款 提示状态信息-->
+            <view wx:if="{{item.state == 2}}">处理中</view>
+            <view wx:if="{{item.state == 3}}">退款失败</view>
+            <view wx:if="{{item.state == 4}}">退款完成</view>
+          </block>
+        <block wx:if="{{item.afterSaleType == 4}}"> <!-- 换货 提示状态信息-->
+          <view wx:if="{{item.state == 2}}">处理中</view>
+          <view wx:if="{{item.state == 3}}">审核失败</view>
+          <view wx:if="{{item.state == 4}}">已完成</view>
+        </block>
+        <block wx:if="{{item.afterSaleType == 5}}"> <!-- 补发 提示状态信息-->
+          <view wx:if="{{item.state == 2}}">处理中</view>
+          <view wx:if="{{item.state == 3}}">退款失败</view>
+          <view wx:if="{{item.state == 4}}">退款完成</view>
+        </block>
+<!--          <view wx:if="{{item.state == 5}}">退款失败</view>-->
+<!--          <view wx:if="{{item.state == 6 && item.afterSaleType == 3}}">买家发货</view>-->
+<!--          <view wx:if="{{item.state == 6 && item.afterSaleType == 4}}">买家发货</view>-->
+<!--          <view wx:if="{{item.state == 7}}">卖家签收</view>-->
+<!--          <view wx:if="{{item.state == 8}}">关闭</view>-->
+<!--          <view wx:if="{{item.state == 9}}">卖家发货</view>-->
+<!--          <view wx:if="{{item.state == 10}}">买家签收</view>-->
+        <view wx:if="{{item.state == 2 && item.afterSaleType == 3 && item.afterSaleDetails[0].state == 2}}">商家已同意，请把商品寄回</view> <!--退货退款的提示信息-->
+        <view wx:if="{{item.state == 2 && item.afterSaleType == 3 && item.afterSaleDetails[0].state == 6}}">商品已寄出，待商家签收</view> <!--退货退款的提示信息-->
+        <view wx:if="{{item.state == 2 && item.afterSaleType == 4 && item.afterSaleDetails[0].state == 2}}">商家已同意，请把商品寄回</view> <!--换货的 提示信息-->
+        <view wx:if="{{item.state == 2 && item.afterSaleType == 5 && item.afterSaleDetails[0].state == 9}}">商家已寄出，请留意物流信息并及时确认签收</view> <!--补发的 提示信息-->
+      </view>
+      <view class="order-button-outer">
+        <view wx:if="{{swiperIndex == 2}}">
+          <view catchtap="orderBtnA(8, {{item}})" class="order-btnJoinCart">去评价</view>
+        </view>
+        <view wx:if="{{item.afterSaleType == 3}}"> <!--退货退款按钮操作-->
+          <view  catchtap="orderBtnA(3, {{item}})"  class="order-btnJoinCart"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 2}}">去发货</view>
+          <view  catchtap="orderBtnA(4, {{item}})"  class="order-btnJoinCart"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 6}}">查看物流</view>
+        </view>
+        <view wx:if="{{item.afterSaleType == 4}}"> <!--换货 按钮操作-->
+          <view  catchtap="orderBtnA(3, {{item}})"  class="order-btnJoinCart"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 2}}">去发货</view>
+          <view  catchtap="orderBtnA(4, {{item}})"  class="order-btnJoinCart"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 6}}">查看物流</view>
+          <view  catchtap="orderBtnA(4, {{item}})"  class="order-btnJoinCart" style="float: left"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 9}}">查看物流</view>
+          <view  catchtap="orderBtnA(5, {{item}})"  class="order-btnJoinCart"
+                 wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 9}}">确认签收</view>
+        </view>
+        <view wx:if="{{item.afterSaleType == 5}}" style="display: flex"> <!--补发 按钮操作-->
+          <block  wx:if="{{item.state == 2 && item.afterSaleDetails[0].state == 9}}">
+            <view  class="order-btnJoinCart" catchtap="orderBtnA(4, {{item}})">查看物流</view>
+            <view  class="order-btnJoinCart" catchtap="orderBtnA(5, {{item}})">确认签收</view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+  <!--custom Modal    查看物流弹框  -->
+  <view class="modal-mask" bindtap="hideModal" wx:if="{{showModal}}">
+  </view>
+  <view wx:if="{{showModal}}">
+    <view class="modal-content">
+      <view class="logis-info-outer">
+        <view wx:if="{{LogisticsList.length > 0}}" class="logis-item {{index == 0 ? 'active' : ''}}" wx:for='{{LogisticsList}}' wx:key="index">
+          <view class="point-outer">
+            <view class="point">
+              <view class="point-inner"></view>
+            </view>
+          </view>
+          <view class="logis-a">
+            <text>{{item.status}}</text>
+          </view>
+          <view class="logis-b">{{item.context}}</view>
+          <view class="logis-c">{{item.time}}</view>
+        </view>
+        <view wx:if="{{LogisticsList.length == 0}}" class="logis-item">
+          <view class="point-outer">
+            <view class="point">
+              <view class="point-inner"></view>
+            </view>
+          </view>
+          <view class="logis-b">暂无物流相关信息</view>
+        </view>
+      </view>
+    </view>
+
+
+  </view>
+</template>
+
+<script>
+// 待发货：提醒发货，查看物流
+// 待收货：延长收货，查看物流，确认收货
+// 待付款：退款，付款
+// 状态（0：全部订单 1：待支付 2：待发货 4：待收货 5：待评论）
+
+import wepy from 'wepy';
+import { apicancelOrderApplyF,apiAfterSaleSignOrderF } from '../../services/mine'
+import miniPro from '@/utils/wepy-pro.js';
+import UrlNavigate from '../../utils/wepyNavigate';
+export default class SureGoodsCom extends wepy.component {
+  props = {
+      item: {
+          type: Object,
+          default: {}
+      },
+      OrderComIndex: {
+          type: [Number, String],
+          default: 0
+      },
+      swiperIndex: {
+          type: [Number, String],
+          default: 0
+      }
+  }
+  data = {
+      id:"",
+    showModal:false,
+    LogisticsList:[]
+  }
+  methods = {
+    orderBtnA(btnItem, item) {
+      let orderDetailId = item.orderDetailId
+      let afterSalesId = item.afterSalesId
+      let type = item.type
+      if (btnItem.key == 2) {    //修改申请
+        // UrlNavigate('/pages/packageMine/afterSalesAction/index',{orderDetailId:orderDetailId,afterSalesId:item.id});
+      }else if(btnItem == 3){//买家发货   填写快递单号  11111
+        let id = item.id
+        UrlNavigate('/pages/packageMine/writeExpressNum/index',{id:id});
+      }else if(btnItem == 4){ // 查看物流 弹框显示物流信息
+        this.showModal = true
+        console.log(item.logisticsBill.dynamics)
+        // let arr = [
+        //   {context: "【代收点】您的快件已签收，签收人在【石街新村中通分部(西乡固戍石街新村6巷15号)】领取。",
+        //     ftime: "2020-04-22 20:22:02",
+        //     status: "签收",
+        //     time: "2020-04-22 20:22:02",
+        //   },
+        //   {context: "【代收点】您的快件已签收，签收人在【石街新村中通分部(西乡固戍石街新村6巷15号)】领取。",
+        //     ftime: "2020-04-22 20:22:02",
+        //     status: "签收",
+        //     time: "2020-04-22 20:22:02"}
+        // ]
+        this.LogisticsList = item.logisticsBill.dynamics
+      }else if(btnItem == 5){ // 确认签收
+        let t = this
+        t.id = item.logisticsBill.id
+        miniPro.showConfirm({
+          title: '提示',
+          content: '确定签收吗？',
+          callback(flag) {
+            if (!flag) return
+            t.apiSignOrderApplyA(t.apiSignOrderApplyA.bind(t))
+          }
+        })
+      }else if(btnItem == 8){ // 买家评价(点击跳转到售后评价)
+        UrlNavigate('/pages/packageMine/afterSaleOrderComment/index',{id:item.id});
+      }else if(btnItem.key == 12){ //取消申请
+        // this.id = item.id
+        // let t = this
+        // miniPro.showConfirm({
+        //   title: '提示',
+        //   content: '确定取消该申请吗？',
+        //   callback(flag) {
+        //     if (!flag) return
+        //     t.apicancelOrderApplyA(t.apicancelOrderApplyA.bind(t))
+        //   }
+        // })
+      }
+    },
+    hideModal() {
+      this.showModal = false
+      this.LogisticsList = []
+    },
+    afterSaleApply(id){ //申请售后
+      wepy.navigateTo({ url: `/pages/packageMine/afterSalesAction/index?orderDetailId=${id}` });
+    },
+    goServeInfo(serveId){ //商品详情
+      wepy.navigateTo({ url: `/pages/packageMine/serviceTickeInfo/index?serveId=${serveId}` });
+    },
+  }
+  apiSignOrderApplyA(fun) { //售后订单确认签收
+    let id = this.id
+    apiAfterSaleSignOrderF(id, fun).then((result) => {
+      miniPro.showToast('签收成功！')
+      setTimeout(() => {
+        wepy.redirectTo({ url: `/pages/packageMine/afterSales/index?currentIndex=2` });
+      }, 1500)
+    }).catch((err) => {});
+  }
+
+
+  // apicancelOrderApplyA(fun) {
+  //   let id = this.id
+  //   apicancelOrderApplyF(id, fun).then((result) => {
+  //     miniPro.showToast('取消申请成功！')
+  //     setTimeout(() => {
+  //       wepy.navigateTo({ url: `/pages/packageMine/afterSales/index` });
+  //     }, 700)
+  //   }).catch((err) => {});
+  // }
+  computed = {
+  }
+  watch = {
+  }
+  onLoad() {
+
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import './index.scss';
+@import '../../common/css/rpx.scss';
+@import '../../common/css/const.scss';
+@import '../../common/css/mixin.scss';
+
+</style>

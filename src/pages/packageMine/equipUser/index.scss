@@ -1,0 +1,46 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+}
+.address-edit-ctner {
+  padding: 0 rpx(50);
+  height: 100%;
+  .e-content{
+    height: rpx(150);
+    //@include borderBottomOnePx;
+    border-bottom: rpx(1) solid #EEE;
+    background: #FFFFFF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .e-left{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      image{
+        width: rpx(64);
+        height: rpx(59);
+        margin-right: rpx(20);
+      }
+      .e-text{
+        view:nth-of-type(1){
+          font-size: rpx(28);
+          color: #333333;
+          padding-bottom: rpx(15);
+        }
+        view:nth-of-type(2){
+          font-size: rpx(22);
+          color: #999999;
+        }
+      }
+    }
+    .e-right{
+      image{
+        width: rpx(28);
+        height: rpx(30);
+      }
+    }
+  }
+
+}

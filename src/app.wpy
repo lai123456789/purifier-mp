@@ -1,0 +1,229 @@
+<style lang="scss">
+  @import './common/css/common';
+  @import './common/css/base';
+  // page 公共样式
+  page {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+</style>
+<script>
+  import wepy from 'wepy';
+  import 'wepy-async-function';
+  import './common/js/authProcess.js';
+  import EventQueue from './common/js/eventQueue';
+  import { EVENT_QUEUE_NAME, Version,MAIN_DOMAIN } from './common/js/config';
+  import miniPro from '@/utils/wepy-pro.js'
+  export default class extends wepy.app {
+    config = {
+      pages: [
+        'pages/index/index',
+        'pages/equipment/index',
+        'pages/Information/index',
+        'pages/mine/index',
+        'pages/login/index',
+        'pages/authorize/index',
+        'pages/webview/index'
+      ],
+      permission: {
+        "scope.userLocation": {
+          "desc": "你的位置信息将用于小程序位置接口的效果展示" // 高速公路行驶持续后台定位
+        }
+      },
+      window: {
+        navigationBarBackgroundColor: '#DE4040',
+        navigationBarTitleText: '新一代厨房专用智能净水器',
+        navigationBarTextStyle: 'white',
+        // enablePullDownRefresh:true //全局配置开启页面下拉刷新  可以在每个页面里面开启
+        // 在页面调用onPullDownRefresh(){ //逻辑代码 然后wx.stopPullDownRefresh()延迟1.5秒停止刷新动画 }
+      },
+      subPackages: [
+        {
+          root: 'pages/packageIndex',
+          pages: [
+            'goodsDetail/index',
+            'applyAtrialForm/index',
+            'applySuccess/index'
+          ]
+        },
+        {
+          root: 'pages/packageMine',
+          pages: [
+            'about/index',
+            'addressList/index',
+            'addressEdit/index',
+            'sureOrder/index',
+            'shareEquip/index',
+            'useWaterReport/index',
+            'myOrder/index',
+            'serveAgreement/index',
+            'paySuccess/index',
+            'equipUser/index',
+            'useWaterReportInfo/index',
+            'userAgreement/index'
+          ]
+        },
+        {
+          root: 'pages/packeInformation',
+          pages: [
+            'taleDetail/index',
+          ]
+        },
+        {
+          root: 'pages/packequipment',
+          pages: [
+            'equipEdit/index',
+            'equipInfo/index',
+            'waterTarget/index',
+            'scanFail/index',
+            'addEquip/index',
+            'useWaterToday/index'
+          ]
+        }
+      ],
+      tabBar: {  //这里图片地址只能存本地
+        color: '#333333',
+        selectedColor: '#FF2A3F',
+        list: [
+          {
+            pagePath: 'pages/index/index',
+            text: '首页',
+            iconPath: './images/home_light.png',
+            selectedIconPath: './images/home_fill_light.png'
+          },
+          {
+            pagePath: 'pages/equipment/index',
+            text: '设备',
+            iconPath: './images/news_hot_light.png',
+            selectedIconPath: './images/news_hot_fill_light.png'
+          },
+          {
+            pagePath: 'pages/Information/index',
+            text: '资讯',
+            iconPath: './images/info_light.png',
+            selectedIconPath: './images/info_fill_light.png'
+          },
+          {
+            pagePath: 'pages/mine/index',
+            text: '我的',
+            iconPath: './images/my_light.png',
+            selectedIconPath: './images/my_fill_light.png'
+          }
+        ]
+      }
+    };
+    globalData = {
+      userInfo: null,
+      [EVENT_QUEUE_NAME]: new EventQueue(),
+      qrCode:'',
+      addressObj: {
+        addressStr: '',
+        addressId: ''
+      }
+    };
+    data = {
+      isLogin:""
+    }
+    constructor() {
+      super();
+      this.use('requestfix');
+      // 启动 promise
+      // this.use('promisify');
+      //拦截request请求
+      this.intercept('request',{    //拦截器 暂时没用到效果
+        //发出请求时的回调函数
+        config(p){
+          //对所有request请求中的OBJECT参数对象统一附加时间戳属性
+          p.timestamp = +new Date();
+          //必须返回OBJECT参数对象，否则无法发送请求到服务端
+          // console.log(p)
+          // console.log("config P 拦截器请求")
+          return p;
+        },
+        //请求成功后的回调函数
+        success(p){
+          //可以在这里对收到的响应数据对象进行加工处理
+          // console.log(p)
+          return p;
+        },
+        //请求失败后的回调函数
+        fail(p){
+          // console.log('request fail: ',p);
+          //必须返回响应数据对象，否则后续无法对响应数据进行处理
+          console.log('服务器请求失败，请稍后再试');
+          return p;
+        },
+        //请求完成时的回调函数(请求成功或失败都会被执行)
+        complete(p){
+          // console.log('request complete: ',p);
+          return p;
+
+        }
+        /**使用拦截器 发请求时的流程大概是，你页面中的程序->拦截器->底层发出http请求，接收响应的时候，大概是，底层接收到响应->拦截器->页面中的程序。。
+         * 所以发请求时的return对象就是让底层可以继续执行发送请求操作，如果你在拦截器中对数据检验不通过，不return的话，请求就不会发送了。。
+         * 反之亦然，接受响应的时候，你不return的话，你页面中写的逻辑就接收不到响应信息了，无法处理。**/
+      });
+    }
+    async onLoad() {}
+    async onLaunch() {
+      // wx.setStorageSync(KEY,DATA)
+      if (wx.canIUse('getUpdateManager')) {   //更新小程序版本
+        const updateManager = wx.getUpdateManager()
+        updateManager.onCheckForUpdate(function (res) {
+          if (res.hasUpdate) {
+            updateManager.onUpdateReady(function () {
+              wx.showModal({
+                title: '更新提示',
+                content: '新版本已经准备好，是否重启小程序应用？',
+                success: function (res) {
+                  if (res.confirm) {
+                    updateManager.applyUpdate()
+                  }
+                }
+              })
+            })
+            updateManager.onUpdateFailed(function () {
+              wx.showModal({
+                title: '已经有新版本了哟~',
+                content: '新版本已经上线啦~，请您删除当前小程序，重新搜索打开哟~'
+              })
+            })
+          }
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+        })
+      }
+    }
+    onShow(){  //每次进入页面都会调用查询是否登录
+      const Access_Token = miniPro.getAccessToken()
+      if(Access_Token){
+        wepy.request({
+          url: `${MAIN_DOMAIN}/api/wx/user/isLogin`, //是否登录接口
+          method: 'GET',
+          header: {
+            'version' : Version,
+            'Authorization': `${Access_Token}`,
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+          success(res) {
+            if (res.data.data.login == false){
+              miniPro.showToast("正在重新登录...")
+              setTimeout(() => {
+                wx.navigateTo({ url: '/pages/authorize/index' })
+              },2000)
+            }else if(res.data.data.login == true){
+              console.log("当前登录态有效 login为true")
+            }
+          }
+        })
+      }else{
+        // wx.navigateTo({ url: '/pages/authorize/index' })
+      }
+    }
+  }
+</script>
+

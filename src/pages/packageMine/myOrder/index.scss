@@ -1,0 +1,174 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+//.cssHeight{
+//  height: auto;
+//}
+.cat-item-ctner{
+  background:rgba(240,240,240,1);
+  padding: rpx(8) rpx(30) rpx(30) rpx(30);
+  height: 100%;
+  overflow-y: scroll;
+  .cat-item{
+    margin: rpx(20) 0;
+    position: relative;
+    padding: rpx(20) rpx(20) rpx(10) rpx(20);
+    background: #FFF;
+    border-radius: rpx(10);
+    .order-status-order {
+      height: rpx(28);
+      display: flex;
+      align-items: center;
+      padding:rpx(10) 0 rpx(30) 0;
+      text:nth-of-type(1) {
+        font-size: rpx(24);
+        width: rpx(300);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: #999999;
+      }
+      text:nth-of-type(2) {
+        margin:0 rpx(10);
+        flex: 1;
+        text-align: right;
+        color: $color-word-alarm;
+        font-size: rpx(28);
+      }
+      text:nth-of-type(3) {
+        font-weight: bold;
+        color: $color-word-alarm;
+      }
+      image {
+        width: rpx(11);
+        height: rpx(18);
+        margin-left: rpx(10);
+      }
+    }
+    .goods-outer {
+      display: flex;
+      align-items: center;
+      padding: rpx(17) 0;
+      position: relative;
+    }
+    .btn-cash{
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      //margin-top: rpx(-47);
+      margin-top: rpx(-15);
+      view{
+
+        color: #FFF;
+        font-size: rpx(26);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: rpx(280);
+        text-align: right;
+        border-radius: rpx(30);
+        height: rpx(38);
+      }
+      view.activeGo{
+        background: #FF2A3F;
+      }
+      view.activeShare{
+        background: #FF7F00;
+      }
+      view.activeSpread{
+        background: #FF3C00;
+      }
+    }
+    .cat-m {
+      width: rpx(90);
+      height: rpx(100);
+      margin: 0 rpx(26) 0 rpx(16);
+      image{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .cat-m-t {
+      flex: 1;
+      margin-right: rpx(20);
+      height: rpx(100);
+      .goods-name {
+        font-size: rpx(28);
+        color: $color-word-one;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        //display: -webkit-box;
+        //-webkit-line-clamp: 2;
+        //line-clamp: 2;
+        //-webkit-box-orient: vertical;
+        width: rpx(510);
+        white-space: nowrap;
+        letter-spacing: rpx(3);
+        line-height: rpx(30);
+      }
+    }
+    .cat-m-R{
+      display: flex;
+      justify-content: space-between;
+      margin-top: rpx(40);
+      view:nth-of-type(1){
+        flex: 1;
+        font-size: rpx(26);
+        margin-bottom: rpx(5);
+      }
+      view:nth-of-type(2){
+        font-size: rpx(26);
+        margin-bottom: rpx(5);
+      }
+
+    }
+    .order-num-outer {
+      height: rpx(20);
+      line-height: rpx(20);
+      font-size: rpx(16);
+      text-align: right;
+      padding-top:rpx(20);
+      border-top: rpx(1) solid #EEE;
+      text{
+        color: $color-word-three;
+        font-size: rpx(24);
+        font-weight: bold;
+      }
+    }
+    .order-button-outer {
+      //border-top: rpx(1) solid #EEEEEE;
+      display: flex;
+      justify-content: flex-end;
+      padding: rpx(13) 0 rpx(15) 0;
+      .order-btn {
+        height: rpx(45);
+        line-height: rpx(40);
+        font-size: rpx(20);
+        padding: 0 rpx(16);
+        color: blue;
+        border-radius: rpx(20);
+        margin-left: rpx(17);
+        background: #FFFFFF;
+        width: rpx(150);
+        display: flex;
+        justify-content: center;
+      }
+      .order-btn.order-btn-active {
+        border: rpx(1) solid $color-word-alarm;
+        color: $color-word-alarm;
+        font-size: rpx(22);
+      }
+      .order-btn.order-cancel {
+        color: #666666;
+        font-size: rpx(22);
+        border: rpx(1) solid #666666;
+      }
+      .order-btn.order-cancel {
+        opacity: 0.8;
+      }
+    }
+  }
+
+
+}
+

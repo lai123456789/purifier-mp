@@ -1,0 +1,43 @@
+<template>
+  <view class='pay-success-ctner'>
+    <view class="suc-top">
+      <image class="top-a" src='../../../images/payment@2x.png'></image>
+      <view class="top-b">
+        · 恭喜您！你已成功支付 ·
+      </view>
+      <view class="top-c">我们会尽快给您安排服务~</view>
+    </view>
+    <view class="pat-btn-wrap">
+      <button class="icx-btn-same-cancel" @tap='continueBuyA'>返回首页</button>
+      <button class="icx-btn-same-cancel" @tap='checkOrderA'>查看订单</button>
+    </view>
+  </view>
+
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class PaySuccess extends wepy.page {
+  config = {
+    navigationBarTitleText: '支付成功'
+  };
+  components = {
+  };
+  data = {
+  };
+  methods = {
+    continueBuyA() {
+      wepy.switchTab({ url: `/pages/index/index` })
+    },
+    checkOrderA() {
+      wepy.redirectTo({ url: `/pages/packageMine/myOrder/index?current=0` });
+    }
+  };
+  onLoad() {
+
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

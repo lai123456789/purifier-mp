@@ -1,0 +1,57 @@
+<template>
+  <view>
+    <web-view src="{{url}}"></web-view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class WebView extends wepy.page {
+  config = {};
+
+  data = {
+    url: ''
+  };
+
+  onLoad(options) {
+    let _url = options.url;
+    let _queryObj = options.queryObj;
+    if (_queryObj) {
+      _queryObj = JSON.parse(_queryObj);
+      let _arr = [];
+      Object.entries(_queryObj).forEach(v => {
+        _arr.push(`${v[0]}=${v[1]}`);
+      });
+      this.url = `${_url}?${_arr.join('&')}`;
+    } else {
+      this.url = _url;
+    }
+    console.log(';;;', this.url)
+  }
+
+  onShareAppMessage(options) {
+    //webview 页面分享 回调会多一个参数 webViewUrl
+    console.log(options)
+    var that = this
+    var return_url = options.webViewUrl
+    return {
+      title: that.data.title,
+      path: return_url,
+      success: function (res) {
+        that.web_url = return_url
+        // 转发成功
+      },
+      fail: function (res) {
+        // 转发失败
+      }
+    }
+  }
+
+
+}
+</script>
+
+<style lang="scss" scoped>
+@import './index';
+</style>

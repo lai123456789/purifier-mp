@@ -1,0 +1,445 @@
+<template>
+  <view class='address-edit-ctner'>
+<!--    <view class="e-content" @tap="toUser">-->
+<!--      <view class="e-left">-->
+<!--        <image src="../../../images/equiment.png"></image>-->
+<!--        <view class="e-text">-->
+<!--          <view>谁谁谁的净水器</view>-->
+<!--          <view>状态：离线</view>-->
+<!--        </view>-->
+<!--      </view>-->
+<!--      <view class="e-right">-->
+<!--        <image src="../../../images/Sharebutton@3x.png"></image>-->
+<!--      </view>-->
+<!--    </view>-->
+    <view class="caption-wrap">
+      <i-collapse name="{{name}}" accordion>
+        <i-collapse-item  name="name{{index}}"  wx:for="{{shareEquipArr}}" wx:for-item="item" wx:key="index"
+                          class="item">
+          <view slot="title" class="item-title">
+            <view>{{item.name}}</view>
+            <button @tap.stop="shareClick({{item}})">
+              <image src="../../../images/Sharebutton@3x.png"></image>
+            </button>
+          </view> <!--自定义标题-->
+          <view slot="content" class="item-index">
+            <view class="item-content"  hover-class="btn-hover"
+                  wx:for="{{item.subBinds}}" wx:for-item="subItem"
+                  @tap="toReportInfo({{item}},{{subItem}})">
+              <view class="headImg"><image src="{{subItem.headImg}}"></image></view>
+              <view class="name">{{subItem.nickName}}</view>
+              <view class="iconImg" @tap.stop="delEquip({{subItem.id}})">
+                <image src="../../../images/icon_del@2x.png"></image>
+              </view>
+            </view>
+          </view>
+        </i-collapse-item>
+      </i-collapse>
+    </view>
+  </view>
+  <!-- 分享弹框  -->
+  <view class="share-outer" wx:if="{{shareObj.isShowSharePop}}">
+    <view class="share-inner">
+      <view class="share-img-con">
+        <image src="{{shareObj.qrImg}}"></image>
+      </view>
+      <view class="share-btn-wrap">
+        <view class="sure-btns">
+          <view class="btn">
+            <button class="icx-clear-after-border"> <!-- open-type="share"-->
+              <image src='../../../images/we_icon.png'></image>
+              <view>微信</view>
+            </button>
+          </view>
+          <view class="btn" @tap='saveA'>
+            <image src='../../../images/save_icon.png'></image>
+            <view>保存</view>
+          </view>
+        </view>
+        <view class="cancel-btn" @tap='cancelShareA'>取消分享</view>
+        <view class="open-btn-wrap" wx:if="{{shareObj.isShowOpen}}">
+          <button class="icx-btn-same-sure" bindtap="openSetting">打开设置页，获取相机权限</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import { delEquipF, getshareEquipListF,apiGetMyShareF } from '../../../services/equipment';
+export default class shareEquip extends wepy.page {
+  config = {
+    navigationBarTitleText: '分享设备',
+    "usingComponents": {
+      "i-collapse": "../../../components/iviewUI/collapse/index",
+      "i-collapse-item": "../../../components/iviewUI/collapse-item/index"
+    }
+  };
+  components = {
+  };
+  data = {
+    shareId:'',
+    bindId:'',
+    shareEquipArr:[],
+    shareObj: {
+      goodShareImg: '',
+      qrImg: '',
+      isShowSharePop: false,
+      isShowOpen: false
+    },
+  }
+
+  computed = {
+
+  }
+  methods = {
+    delEquip(id){
+      let self = this
+      delEquipF(id).then(result => {
+        miniPro.showConfirm({
+          title: '提示',
+          content: '确定解除该用户的绑定吗？',
+          callback(flag) {
+            if (!flag) return
+            miniPro.showToast("已解除该用户的绑定")
+          }
+        })
+        self.$apply()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    toUser(){
+      wepy.navigateTo({ url: `/pages/packageMine/equipUser/index` })
+    },
+    shareClick(e){
+      this.shareId = e.id
+      this.bindId = e.bindId
+      this.apiGetMyShareFA(this.apiGetMyShareFA.bind(this))
+    },
+    cancelShareA() {
+      this.shareObj.isShowSharePop = false
+    },
+    saveA() {
+      let _this = this
+      //获取相册授权
+      wx.getSetting({
+        success(res) {
+          if (!res.authSetting['scope.writePhotosAlbum']) {
+            wx.authorize({
+              scope:'scope.writePhotosAlbum',
+              success() {
+                _this.downLoadA()
+              },
+              fail() {
+                _this.downLoadA()
+              }
+            })
+          } else {
+            _this.downLoadA()
+          }
+        }
+      })
+    },
+    openSetting() {
+      let _this = this
+      wepy.openSetting({
+        success(settingdata) {
+          _this.shareObj.isShowOpen = false
+          _this.$apply()
+          if (settingdata.authSetting['scope.writePhotosAlbum']) {
+            _this.downLoadA()
+          } else {
+            miniPro.showToast('获取权限失败，无法保存')
+          }
+        }
+      })
+    },
+  }
+  downLoadA() {
+    let _this = this
+    wepy.downloadFile({
+      url: _this.shareObj.qrImg,
+      success: function (res) {
+        //图片保存到本地
+        wepy.saveImageToPhotosAlbum({
+          filePath: res.tempFilePath,
+          success: function (data) {
+            miniPro.showToast('保存成功');
+            setTimeout(() => {
+              _this.shareObj.isShowSharePop = false;
+              _this.$apply()
+            }, 800)
+          },
+          fail: function (err) {
+            if (err.errMsg === "saveImageToPhotosAlbum:fail auth deny") {
+              _this.shareObj.isShowOpen = true
+              _this.$apply()
+            }
+          },
+          complete(res){
+          }
+        })
+      }
+    })
+  }
+  apiGetMyShareFA(fun) {
+    let id = this.shareId
+    let data = {
+      bindId: this.bindId
+    }
+    apiGetMyShareF(id,data,fun).then(msg => {
+      this.shareObj.isShowSharePop = true
+      this.shareObj.qrImg = msg.qrImg
+      this.$apply();
+    }).catch(() => { });
+  }
+  getshareEquipListF(){
+    let self = this
+    getshareEquipListF().then(result => {
+      self.shareEquipArr = result
+      // self.shareEquipArr = [
+      //   {
+      //     "id": 9,
+      //     "createTime": "2020-06-18 17:49:14",
+      //     "updateTime": "2020-06-18 17:49:14",
+      //     "name": "不存在的设备",
+      //     "userId": 19305,
+      //     "mac": "0865429043819008",
+      //     "model": "RHY-RO-600F",
+      //     "demoFlag": false,
+      //     "state": 1,
+      //     "powerState": "00",
+      //     "powerTime": "2020-06-18 17:49:14",
+      //     "valveState": "00",
+      //     "valveTime": "2020-06-18 17:49:14",
+      //     "filterLongevity": 4000,
+      //     "bindId": 9,
+      //     "bindType": 2,
+      //     "businessId": 31,
+      //     "expireTime": "2023-06-18 17:49:14",
+      //     "subBinds": [
+      //       {
+      //         "id": 10,
+      //         "createTime": "2020-06-18 18:29:55",
+      //         "updateTime": "2020-06-18 18:29:55",
+      //         "userId": 19304,
+      //         "purifierId": 9,
+      //         "mac": "0865429043819008",
+      //         "bindType": 3,
+      //         "businessId": 9,
+      //         "businessNo": "oB4w4Vrffh5zELtc",
+      //         "expireTime": "2023-06-18 17:49:14",
+      //         "state": 1,
+      //         "remark": "子绑定",
+      //         "nickName": "丶余生",
+      //         "phone": "13160512696",
+      //         "headImg": "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIYZDDXW1mqWt08hegCsbHXmh9WYPDhA8SbhfwYLMI3fbgso6Wznq4iae6ejGQHG3A7SLeLRZIYWeQ/132",
+      //         "openid": "oXos85GuDUYaB0UNdWr6dqNsy5Rk",
+      //         "bindTypeEnum": {
+      //           "key": 3,
+      //           "value": "sub",
+      //           "desc": "子绑定"
+      //         },
+      //         "stateEnum": {
+      //           "key": 1,
+      //           "value": "normal",
+      //           "desc": "正常"
+      //         }
+      //       },
+      //       {
+      //         "id": 10,
+      //         "createTime": "2020-06-18 18:29:55",
+      //         "updateTime": "2020-06-18 18:29:55",
+      //         "userId": 19304,
+      //         "purifierId": 9,
+      //         "mac": "0865429043819008",
+      //         "bindType": 3,
+      //         "businessId": 9,
+      //         "businessNo": "oB4w4Vrffh5zELtc",
+      //         "expireTime": "2023-06-18 17:49:14",
+      //         "state": 1,
+      //         "remark": "子绑定",
+      //         "nickName": "丶余生",
+      //         "phone": "13160512696",
+      //         "headImg": "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIYZDDXW1mqWt08hegCsbHXmh9WYPDhA8SbhfwYLMI3fbgso6Wznq4iae6ejGQHG3A7SLeLRZIYWeQ/132",
+      //         "openid": "oXos85GuDUYaB0UNdWr6dqNsy5Rk",
+      //         "bindTypeEnum": {
+      //           "key": 3,
+      //           "value": "sub",
+      //           "desc": "子绑定"
+      //         },
+      //         "stateEnum": {
+      //           "key": 1,
+      //           "value": "normal",
+      //           "desc": "正常"
+      //         }
+      //       },
+      //       {
+      //         "id": 10,
+      //         "createTime": "2020-06-18 18:29:55",
+      //         "updateTime": "2020-06-18 18:29:55",
+      //         "userId": 19304,
+      //         "purifierId": 9,
+      //         "mac": "0865429043819008",
+      //         "bindType": 3,
+      //         "businessId": 9,
+      //         "businessNo": "oB4w4Vrffh5zELtc",
+      //         "expireTime": "2023-06-18 17:49:14",
+      //         "state": 1,
+      //         "remark": "子绑定",
+      //         "nickName": "丶余生",
+      //         "phone": "13160512696",
+      //         "headImg": "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIYZDDXW1mqWt08hegCsbHXmh9WYPDhA8SbhfwYLMI3fbgso6Wznq4iae6ejGQHG3A7SLeLRZIYWeQ/132",
+      //         "openid": "oXos85GuDUYaB0UNdWr6dqNsy5Rk",
+      //         "bindTypeEnum": {
+      //           "key": 3,
+      //           "value": "sub",
+      //           "desc": "子绑定"
+      //         },
+      //         "stateEnum": {
+      //           "key": 1,
+      //           "value": "normal",
+      //           "desc": "正常"
+      //         }
+      //       }
+      //
+      //     ],
+      //     "bindTypeEnum": {
+      //       "key": 2,
+      //       "value": "order",
+      //       "desc": "订单绑定"
+      //     },
+      //     "availableDays": 1095
+      //   },
+      //   {
+      //     "id": 9,
+      //     "createTime": "2020-06-18 17:49:14",
+      //     "updateTime": "2020-06-18 17:49:14",
+      //     "name": "不存在的设备",
+      //     "userId": 19305,
+      //     "mac": "0865429043819008",
+      //     "model": "RHY-RO-600F",
+      //     "demoFlag": false,
+      //     "state": 1,
+      //     "powerState": "00",
+      //     "powerTime": "2020-06-18 17:49:14",
+      //     "valveState": "00",
+      //     "valveTime": "2020-06-18 17:49:14",
+      //     "filterLongevity": 4000,
+      //     "bindId": 9,
+      //     "bindType": 2,
+      //     "businessId": 31,
+      //     "expireTime": "2023-06-18 17:49:14",
+      //     "subBinds": [
+      //       {
+      //         "id": 10,
+      //         "createTime": "2020-06-18 18:29:55",
+      //         "updateTime": "2020-06-18 18:29:55",
+      //         "userId": 19304,
+      //         "purifierId": 9,
+      //         "mac": "0865429043819008",
+      //         "bindType": 3,
+      //         "businessId": 9,
+      //         "businessNo": "oB4w4Vrffh5zELtc",
+      //         "expireTime": "2023-06-18 17:49:14",
+      //         "state": 1,
+      //         "remark": "子绑定",
+      //         "nickName": "丶余生",
+      //         "phone": "13160512696",
+      //         "headImg": "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIYZDDXW1mqWt08hegCsbHXmh9WYPDhA8SbhfwYLMI3fbgso6Wznq4iae6ejGQHG3A7SLeLRZIYWeQ/132",
+      //         "openid": "oXos85GuDUYaB0UNdWr6dqNsy5Rk",
+      //         "bindTypeEnum": {
+      //           "key": 3,
+      //           "value": "sub",
+      //           "desc": "子绑定"
+      //         },
+      //         "stateEnum": {
+      //           "key": 1,
+      //           "value": "normal",
+      //           "desc": "正常"
+      //         }
+      //       }
+      //     ],
+      //     "bindTypeEnum": {
+      //       "key": 2,
+      //       "value": "order",
+      //       "desc": "订单绑定"
+      //     },
+      //     "availableDays": 1095
+      //   },
+      //   {
+      //     "id": 9,
+      //     "createTime": "2020-06-18 17:49:14",
+      //     "updateTime": "2020-06-18 17:49:14",
+      //     "name": "不存在的设备",
+      //     "userId": 19305,
+      //     "mac": "0865429043819008",
+      //     "model": "RHY-RO-600F",
+      //     "demoFlag": false,
+      //     "state": 1,
+      //     "powerState": "00",
+      //     "powerTime": "2020-06-18 17:49:14",
+      //     "valveState": "00",
+      //     "valveTime": "2020-06-18 17:49:14",
+      //     "filterLongevity": 4000,
+      //     "bindId": 9,
+      //     "bindType": 2,
+      //     "businessId": 31,
+      //     "expireTime": "2023-06-18 17:49:14",
+      //     "subBinds": [
+      //       {
+      //         "id": 10,
+      //         "createTime": "2020-06-18 18:29:55",
+      //         "updateTime": "2020-06-18 18:29:55",
+      //         "userId": 19304,
+      //         "purifierId": 9,
+      //         "mac": "0865429043819008",
+      //         "bindType": 3,
+      //         "businessId": 9,
+      //         "businessNo": "oB4w4Vrffh5zELtc",
+      //         "expireTime": "2023-06-18 17:49:14",
+      //         "state": 1,
+      //         "remark": "子绑定",
+      //         "nickName": "丶余生",
+      //         "phone": "13160512696",
+      //         "headImg": "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIYZDDXW1mqWt08hegCsbHXmh9WYPDhA8SbhfwYLMI3fbgso6Wznq4iae6ejGQHG3A7SLeLRZIYWeQ/132",
+      //         "openid": "oXos85GuDUYaB0UNdWr6dqNsy5Rk",
+      //         "bindTypeEnum": {
+      //           "key": 3,
+      //           "value": "sub",
+      //           "desc": "子绑定"
+      //         },
+      //         "stateEnum": {
+      //           "key": 1,
+      //           "value": "normal",
+      //           "desc": "正常"
+      //         }
+      //       }
+      //     ],
+      //     "bindTypeEnum": {
+      //       "key": 2,
+      //       "value": "order",
+      //       "desc": "订单绑定"
+      //     },
+      //     "availableDays": 1095
+      //   },
+      // ]
+
+      self.$apply()
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  onShow(){
+    this.getshareEquipListF(this.getshareEquipListF.bind(this))
+  }
+  onLoad(option) {
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

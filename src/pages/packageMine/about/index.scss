@@ -1,0 +1,34 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+}
+.about-ctner{
+   padding: rpx(12) rpx(30);
+  view{
+    color: #333333;
+  }
+  .word-index{
+    text-align: center;
+    margin: rpx(20) 0;
+  }
+   .word {
+       text-indent: 2em;
+       line-height: 2;
+       font-size: rpx(26);
+     image{
+       width: rpx(400);
+       height: rpx(400);
+       margin: rpx(20) 0 0 0;
+     }
+   }
+   .word-b {
+       font-weight: bolder;
+   }
+  .word-introduce {
+    text-indent: 2em;
+    line-height: 2;
+    font-size: rpx(26);
+    margin-top: rpx(-20);
+  }
+}

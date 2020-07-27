@@ -1,0 +1,739 @@
+<template>
+  <view class='goods-detail-ctner'>
+    <import src="../../../common/wxParse/wxParse.wxml"/>
+      <view class="goods-con-outer">
+          <view class="goods-banner" style="height: {{Hei}};line-height: {{Hei}}">
+            <swiper
+              indicator-dots="{{indicatorDots}}"
+              autoplay="{{autoplay}}"
+              interval="{{interval}}"
+              duration="{{duration}}"
+              indicator-color='#999'
+              indicator-active-color='#FFF'
+              circular = 'true'
+              style='height:100%' >
+              <block wx:for="{{bannerArr}}"   wx:key="indx" wx:for-index="index" data-index="{{index}}">
+                <swiper-item style="height: 100%; display: flex;align-items: center">
+                  <!--              <image src="{{item.bannerPath}}" class="slide-image {{item.style}}" data-index="{{index}}"  bindload="imgF"/>-->
+                  <image src="{{item.bannerPath}}" style="width: 100%;" class="{{item.isSquare ? 'active' : ''}}"/>
+                </swiper-item>
+              </block>
+            </swiper>
+        </view>
+
+        <view class="goods-des-outer">
+          <view class="price-outer">
+            <view class="price-a">
+              <view class="price-a-t">
+                <text class="price-1">￥ {{firstSpec.price}}</text>
+                <text class="price-2">￥ {{firstSpec.vipPrice}}</text>
+                <image src='../../../images/vip_icon.gif'></image>
+              </view>
+              <view class="price-a-b">
+                <text>￥ {{firstSpec.marketPrice}}</text>
+              </view>
+            </view>
+            <view class="price-b" @tap='toCollectA'>
+              <image wx:if="{{isCollect}}" src='https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/start_on.png'></image>
+              <image wx:else src='https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/start_off.png'></image>
+              <view>收藏</view>
+            </view>
+            <view class="price-c" @tap='toShareA'> <!-- wx:if="{{!shareObj.goodShareImg}}"-->
+              <image src='https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/vip_zhuanfa.png'></image>
+              <view>分享</view>
+            </view>
+          </view>
+          <view class="desc-outer">
+            <text>{{goodsDetailObj.goodsName || '--'}}</text>
+            <text>已售{{goodsDetailObj.buyNumber}}件</text>
+          </view>
+          <view class="desc-sub-outer">{{goodsDetailObj.goodsDescription}}</view>
+        </view>
+
+
+        <view class="G-line"></view>
+
+        <view class="member-outer" wx:if="{{userLevel == 0}}">
+          <view class="member-bg">
+            <text class="word">现开通会员，立省100元</text>
+            <view class="btn" @tap='toJoinMemberA'>
+              <text>立即开通</text>
+              <image src='../../../images/unfold.png'></image>
+            </view>
+          </view>
+        </view>
+        <view class="G-line" wx:if="{{userLevel == 0}}"></view>
+        <!--        评价内容区 start-->
+        <view class="goods-des-comment" @tap="LookMore" wx:if="{{goodsComment.total > 0}}">
+          <view class="commentIndex">
+            <view class="g1">
+              <view>商品评价（{{goodsComment.total}}）</view>
+              <view>查看更多></view>
+            </view>
+            <view class="g-content">
+              <view class="g-c1">
+                <image src="{{goodsComment.rows[0].headImg}}"></image>
+                <view>
+                  <view class="gc1">{{goodsComment.rows[0].nickName}}</view>
+                  <view class="gc2">
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 5}}">
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                    </block>
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 4}}">
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                    </block>
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 3}}">
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                    </block>
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 2}}">
+                      <image src="../../../images/starred.png"></image>
+                      <image src="../../../images/starred.png"></image>
+                    </block>
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 1}}">
+                      <image src="../../../images/starred.png"></image>
+                    </block>
+                    <block wx:if="{{goodsComment.rows[0].evaluation == 0}}">
+                    </block>
+                  </view>
+                </view>
+              </view>
+              <view class="g-c2">
+                {{goodsComment.rows[0].comment}}
+              </view>
+              <view class="g-c3">
+                {{goodsComment.rows[0].createTime}}
+              </view>
+            </view>
+          </view>
+        </view>
+        <!--        评价内容区 end-->
+        <view class="goods-detail">
+          <template is="wxParse" data="{{wxParseData:goodsDetail.nodes}}"/>
+        </view>
+      </view>
+      <view class="goods-bottom">
+        <view class="gb-kf">
+          <button class="icx-btn" open-type="contact">
+            <image src='	https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/service_light.png'></image>
+            <view>客服</view>
+          </button>
+        </view>
+        <view class="gb-cart">
+          <button @tap='addCartA' class="icx-btn"> <!--//toCartA跳转购物车-->
+            <image src='	https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/cart_light_sub.png'></image>
+            <view>加入购物车</view>
+          </button>
+        </view>
+        <view @tap='buyNowA' hover-class='icx-click-hover' class="gb-join">
+          <view>自购省</view>
+          <view>【省{{priceGetMoney}}】</view>
+        </view>
+        <view @tap='toShareA' hover-class='icx-click-hover' class="gb-buy">
+          <view>分享赚</view>
+          <view>【赚{{priceGetMoney}}】</view>
+        </view>
+      </view>
+      <view class="goods-spc-outer" wx:if="{{showGoodsPop}}" catchtap='specPopA' @touchmove.stop='spcTouch'>
+          <view class="goods-spc-con" @tap.stop='specConStopA'>
+              <view class="goods-des">
+                <view class="des-l">
+                  <image src="{{goodsDetailObj.goodsIco}}"></image>
+                </view>
+                <view class="des-r">
+                    <view wx:if="{{userLevel !== 0}}">￥{{goodsSpecificationVoList[specCurrentIndex].vipPrice}}</view>
+                    <view wx:else>￥{{goodsSpecificationVoList[specCurrentIndex].price}}</view>
+                    <view>库存{{goodsSpecificationVoList[specCurrentIndex].leavingsQuantity}}件</view>
+                    <view>{{goodsDetailObj.goodsName }}</view>
+                </view>
+              </view>
+              <view class="goods-pop-same goods-gg">
+                <view class="goods-pop-title">规格</view>
+                <view class="goods-outer-same goods-gg-outer">
+                  <view catchtap="specChoiceA({{index}}, {{item}})" wx:for="{{goodsSpecificationVoList}}" wx:key="index" class="small {{specCurrentIndex == index ? 'active':''}}">{{item.specification}}</view>
+                </view>
+              </view>
+              <view class="goods-pop-same goods-color"  wx:if="{{goodsColorVoList.length > 0}}">
+                <view class="goods-pop-title">颜色分类</view>
+                <view class="goods-color-outer">
+                    <view catchtap="colorChoiceA({{index}}, {{item}})"  wx:for="{{goodsColorVoList}}" wx:key="index" class="small {{colorCurrentIndex == index ? 'active':''}}">{{item.colorName}}</view>
+                </view>
+              </view>
+              <view class="goods-pop-same goods-buy-num">
+                <view class="goods-pop-title">购买数量</view>
+                <AddCom></AddCom>
+              </view>
+              <view class="goods-pop-same goods-buy-btn">
+                <button @tap='goodsSureA' class="icx-btn-same-sure">确定</button>
+              </view>
+          </view>
+      </view>
+      <!-- 分享弹框   -->
+      <view class="share-outer" wx:if="{{shareObj.isShowSharePop}}">
+          <view class="share-inner">
+            <view class="share-img-con">
+              <image src="{{shareObj.goodShareUrl}}"></image>
+            </view>
+            <view class="share-btn-wrap">
+              <view class="sure-btns">
+                <view class="btn">
+                  <button class="icx-clear-after-border" open-type="share">
+                      <image src='../../../images/we_icon.png'></image>
+                      <view>微信</view>
+                  </button>
+                </view>
+                <view class="btn" @tap='saveA'>
+                  <image src='../../../images/save_icon.png'></image>
+                  <view>保存</view>
+                </view>
+              </view>
+              <view class="cancel-btn" @tap='cancelShareA'>取消分享</view>
+              <view class="open-btn-wrap" wx:if="{{shareObj.isShowOpen}}">
+                <button class="icx-btn-same-sure" bindtap="openSetting">打开设置页，获取相机权限</button>
+              </view>
+            </view>
+
+
+
+          </view>
+      </view>
+  </view>
+  <!--custom Modal   手机授权提醒弹框-->
+  <view class="modal-mask"  @tap="cancelInputPop" wx:if="{{showModal}}">
+  </view>
+  <block wx:if="{{showModal}}">
+    <view class="modal-content" id="apply" >
+      <view class="content-exchang">
+        <view class="btn-content">
+          <view class="text">
+            <view class="text1">
+              <image src="https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/setting_1.png"></image>
+            </view>
+            <view class="text2">为了提供更好的服务</view>
+            <view class="text3">请在稍后的提示框中点击允许</view>
+            <button class="icx-btn-colorBg-whiteText  text4" @tap="cancelInputPop"
+                    open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">我知道了</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</template>
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import {
+  apiGetGoodsDetailsF,
+  apiGetGoodsIdByShareF,
+  apiGetGoodsShareF
+} from '../../../services/index'
+import {
+  apiCartSaveF,
+  apiInfoF,
+  apiCommentListF
+} from '../../../services/cart'
+import {
+  apiCollectDeleteF,
+  apiCollectSaveF,
+  apiCreateOrderF
+} from '../../../services/mine'
+import WxParse from '../../../common/wxParse/wxParse.js'
+import AddCom from '@/components/AddCom/index'
+import { apiPasePhoneF } from '../../../services/login';
+export default class GoodsDetail extends wepy.page {
+  config = {
+    navigationBarTitleText: '商品详情'
+  };
+  components = {
+    AddCom: AddCom
+  };
+  data = {
+    showModal:false,
+    phone:"",
+    sessionKey:"",
+    Hei:"",
+    isWhichFlag: '', //1: 加入购物车 2：立即购买
+    showGoodsPop: false,
+    goodsId: '',
+    shareScene: '',
+    isUserId:'',//分享者id
+    isSk:'',//分享者sk
+    room_id:'',
+    buyNum: 1,
+    goodsDetailObj: {},
+    bannerArr: [],
+    goodsSpecificationVoList: [],// 规格
+    specCurrentIndex: 0,
+    colorCurrentIndex: 0,
+    goodsColorVoList: [], // 颜色规格
+    isCollect: false,
+    userLevel:"",
+    shareObj: {
+      goodShareImg: '',
+      goodShareUrl: '',
+      isShowSharePop: false,
+      isShowOpen: false
+    },
+    priceGetMoney:"",//分享或自购 赚
+    firstSpec: {
+      id: '--',
+      marketPrice: '--',
+      price: '--',
+      specification: '--',
+      vipPrice: '--'
+    },
+    goodsName: '',
+    indicatorDots: false, //轮播图面板 圆点是否显示
+    autoplay: true,
+    interval: 5000,
+    duration: 1000,
+    createData: {
+      prepareType:'0',
+      orderDetail: []
+    },
+    colorId: '',
+    wxData: "<p style='font-size: 32rpx; padding: 30rpx 0; text-align: center;'>此处可以在html2wxml.wpy中自行选择删除</p>",
+    sysWidth: wx.getSystemInfoSync().windowWidth,
+    userId:"",//
+    sk:"",
+    limit:1,//评价内容传的参数
+    offset:0,
+    goodsComment:{}
+  };
+
+  methods = {
+    cancelInputPop(){
+      this.showModal = false
+    },
+    spcTouch() {},//保留 防止点透冒泡事件
+    specConStopA() {},//保留 防止点透冒泡事件
+    specPopA() {
+      this.showGoodsPop = false
+    },
+    toCartA() {
+      wepy.switchTab({ url: '/pages/Information/index' });
+    },
+    specChoiceA(index, item) {
+      this.specCurrentIndex = index
+    },
+    toJoinMemberA() {
+      wepy.navigateTo({ url: `/pages/packageMine/joinMembers/index` });
+    },
+    saveA() {
+      let _this = this
+      //获取相册授权
+      wx.getSetting({
+        success(res) {
+          if (!res.authSetting['scope.writePhotosAlbum']) {
+            wx.authorize({
+              scope:'scope.writePhotosAlbum',
+              success() {
+                _this.downLoadA()
+              },
+              fail() {
+                _this.downLoadA()
+              }
+            })
+          } else {
+            _this.downLoadA()
+          }
+        }
+      })
+    },
+    openSetting() {
+      let _this = this
+      wepy.openSetting({
+        success(settingdata) {
+          _this.shareObj.isShowOpen = false
+          _this.$apply()
+          if (settingdata.authSetting['scope.writePhotosAlbum']) {
+            _this.downLoadA()
+          } else {
+            miniPro.showToast('获取权限失败，无法保存')
+          }
+        }
+      })
+    },
+    cancelShareA() {
+      this.shareObj.isShowSharePop = false
+    },
+    colorChoiceA(index, item) {
+      this.colorCurrentIndex = index
+    },
+    toCollectA() {
+      if (this.isCollect) {
+          this.apiCollectDeleteA(this.apiCollectDeleteA.bind(this))
+      } else {
+        this.apiCollectSaveA(this.apiCollectSaveA.bind(this))
+      }
+    },
+    toShareA() {
+      this.apiGetGoodsShareFA(this.apiGetGoodsShareFA.bind(this))
+    },
+    goodsSureA() {
+      let t = this
+      if (this.isWhichFlag == 1) {  //加入购物车
+        if (this.goodsColorVoList.length > 0) {
+          this.colorId = this.goodsColorVoList[this.colorCurrentIndex].id
+        } else {
+          this.colorId = ''
+        }
+        this.apiCartSaveA(this.apiCartSaveA.bind(this))
+      } else if (this.isWhichFlag == 2) {  //立即购买
+        let qrScene = this.shareScene || ''
+        let shareUserId,shareKey
+        if(this.isUserId){ //按钮分享方式两个参数shareKey、shareUserId
+          shareUserId = this.isUserId
+        }else{
+          shareUserId = this.userId
+        }
+        if(this.isSk){
+          shareKey = this.isSk
+        }else{
+          shareKey = this.sk
+        }
+        let _data = {
+          colorId:'',
+          goodsId: this.goodsId,
+          specificationId: this.goodsSpecificationVoList[this.specCurrentIndex].id,
+          goodsNumber: this.buyNum
+        }
+        if (this.goodsColorVoList.length > 0) {
+          _data.colorId = this.goodsColorVoList[this.colorCurrentIndex].id
+        }
+        let colorId = _data.colorId;
+        let goodsId = _data.goodsId;
+        let specificationId = _data.specificationId;
+        let goodsNumber = _data.goodsNumber;
+        let prepareType = "2"
+        let room_id = this.room_id || ""
+        wepy.navigateTo({ url: `/pages/packageMine/sureOrder/index?colorId=${colorId}&goodsId=${goodsId}&specificationId=${specificationId}&goodsNumber=${goodsNumber}&prepareType=${prepareType}&qrScene=${qrScene}&qrSi=${shareUserId}&qrSk=${shareKey}&room_id=${room_id}` });
+      }
+    },
+    addCartA() {
+      this.isWhichFlag = 1
+      this.showGoodsPop = true
+    },
+    buyNowA() {
+      this.isWhichFlag = 2
+      this.showGoodsPop = true
+    },
+    LookMore(){ //查看更多评价内容
+      let _goodsId = this.goodsId
+      wepy.navigateTo({ url: `/pages/packageIndex/goodsComment/index?goodsId=${_goodsId}` });
+    }
+  }
+  downLoadA() {
+    var _this = this
+    wepy.downloadFile({
+      url: _this.shareObj.goodShareUrl,
+      success: function (res) {
+        //图片保存到本地
+        wepy.saveImageToPhotosAlbum({
+          filePath: res.tempFilePath,
+          success: function (data) {
+            miniPro.showToast('保存成功');
+            setTimeout(() => {
+              _this.shareObj.isShowSharePop = false;
+              _this.$apply()
+            }, 800)
+          },
+          fail: function (err) {
+            if (err.errMsg === "saveImageToPhotosAlbum:fail auth deny") {
+              _this.shareObj.isShowOpen = true
+              _this.$apply()
+            }
+          },
+          complete(res){
+          }
+        })
+      }
+    })
+  }
+
+  apiCartSaveA(fun) { // 添加购物车
+    let shareUserId,shareKey,qrScene
+    qrScene = this.shareScene || ''
+    if(this.isUserId){
+      shareUserId = this.isUserId
+    }else{
+      shareUserId = this.userId
+    }
+    if(this.isSk){
+      shareKey = this.isSk
+    }else{
+      shareKey = this.sk
+    }
+    let param = {
+      qrScene:qrScene,
+      shareKey:shareKey,
+      shareUserId:shareUserId,
+      room_id:this.room_id || "",
+      goodsId: this.goodsId,
+      specificationId: this.goodsSpecificationVoList[this.specCurrentIndex].id,
+      colorId: this.colorId,
+      quantity: this.buyNum,
+    }
+    apiCartSaveF(param, fun).then(msg => {
+      setTimeout(() => {
+        this.showGoodsPop = false
+        this.$apply()
+      }, 1500);
+      miniPro.showToast('添加成功')
+      this.$apply()
+    }).catch(() => { })
+  }
+
+  apiCreateOrderA(fun) {
+    apiCreateOrderF(this.createData, fun).then(msg => {
+      // let _id = msg.id
+      wepy.navigateTo({ url: `/pages/packageMine/sureOrder/index?orderId=${_id}` });
+
+    }).catch(() => { })
+  }
+
+  apiCollectSaveA(fun) {
+    let shareUserId,shareKey,qrScene
+    qrScene = this.shareScene || ''
+    if(this.isUserId){
+      shareUserId = this.isUserId
+    }else{
+      shareUserId = this.userId
+    }
+    if(this.isSk){
+      shareKey = this.isSk
+    }else{
+      shareKey = this.sk
+    }
+    let room_id = this.room_id || ""
+    apiCollectSaveF({
+      room_id:room_id,
+      qrScene:qrScene,
+      shareUserId:shareUserId,
+      shareKey:shareKey,
+      goodsId: this.goodsId,
+    }, fun).then(msg => {
+      miniPro.showToast('收藏成功')
+      setTimeout(() => {
+        this.isCollect = true
+        this.$apply()
+      }, 1000);
+    }).catch(err => {
+      miniPro.showToast('收藏失败')
+    })
+  }
+
+  apiCollectDeleteA(fun) {
+    apiCollectDeleteF(this.goodsId, fun).then(msg => {
+      miniPro.showToast('取消收藏成功')
+      setTimeout(() => {
+        this.isCollect = false
+        this.$apply()
+      }, 1000);
+    }).catch(err => {
+      miniPro.showToast('删除收藏失败')
+    })
+  }
+
+  apiGetGoodsIdByShareFA(fun) {
+    var _self = this
+    apiGetGoodsIdByShareF({
+      shareId: _self.shareScene
+    }, fun).then((result) => {
+      _self.goodsId = result
+      _self.$apply();
+      setTimeout(() => {
+        _self.apiGetGoodsDetailsA(this.apiGetGoodsDetailsA.bind(this))
+      }, 10);
+    }).catch(() => {});
+  }
+  apiGetGoodsDetailsA(fun) {
+    let _self = this
+    let shareUserId,shareKey
+    if(this.isUserId){
+      shareUserId = this.isUserId
+    }else{
+      shareUserId = this.userId
+    }
+    if(this.isSk){
+      shareKey = this.isSk
+    }else{
+      shareKey = this.sk
+    }
+    let qrScene = this.shareScene
+    let room_id = this.room_id || ''
+    apiGetGoodsDetailsF(_self.goodsId,shareUserId,shareKey,qrScene,room_id, fun).then(msg => {
+      console.log("msg")
+      console.log(msg)
+      let { goodsDetail, goodsBannerVoList, goodsSpecificationVoList, goodsColorVoList, goodShareImg, collection } = msg;
+      let banners = [];
+      for(let i in goodsBannerVoList){
+        goodsBannerVoList[i].style = "";
+        banners.push(goodsBannerVoList[i]);
+      }
+      this.bannerArr = banners;
+      this.goodsSpecificationVoList = goodsSpecificationVoList;
+      this.goodsColorVoList = goodsColorVoList;
+      let _first = goodsSpecificationVoList[0];
+      this.priceGetMoney = (_first.price*0.04).toFixed(2)
+      this.goodsDetailObj = msg;
+      this.shareObj.goodShareImg = goodShareImg
+      this.isCollect = collection
+      if (_first) {
+        this.firstSpec = {
+          id: _first.id || '--',
+          marketPrice: _first.marketPrice || '--',
+          price: _first.price || '--',
+          specification: _first.specification || '--',
+          vipPrice: _first.vipPrice || '--'
+        }
+      }
+      WxParse.wxParse('goodsDetail', 'html', goodsDetail, _self, 5);
+      this.apiCommentListFA(this.apiCommentListFA.bind(this)) //获取商品评价内容列表
+      this.$apply();
+    }).catch(() => { });
+  }
+
+  apiGetGoodsShareFA(fun) {
+    var _self = this
+    apiGetGoodsShareF(_self.goodsId, fun).then(msg => {
+      this.shareObj.isShowSharePop = true
+      this.shareObj.goodShareUrl = msg
+      this.$apply();
+    }).catch(() => { });
+  }
+  apiGetInfoFA(fun) { //获取用户userid 用户信息 手机号
+    let _self = this
+    apiInfoF(fun).then(msg => {
+      this.userLevel = msg.userLevel
+      if(msg.phone == "" || !msg.phone){  //未绑定手机号 弹框让用户授权绑定手机号
+        this.showModal = true
+      }
+        _self.sessionKey = msg.sessionKey
+        _self.userId = msg.userId
+        _self.sk = Math.random().toString(21).substr(4);
+      _self.$apply();
+    }).catch(() => { });
+  }
+  apiCommentListFA(fun){
+    let t = this
+    let param = {
+      limit:t.limit,
+      offset:t.offset
+    }
+    let goodsId = t.goodsId
+    apiCommentListF(param,goodsId,fun).then(msg => {
+      console.log(msg)
+      t.goodsComment = msg
+      this.$apply();
+    }).catch(() => { });
+  }
+  getPhoneNumber(e) {
+    console.log(e)
+    if (e.detail.errMsg == 'getPhoneNumber:fail user deny' || e.detail.errMsg == 'getPhoneNumber:fail:user deny') {  //拒绝授权
+      miniPro.showToast("拒绝授权无法为您提供更好的服务，请点击允许授权哦！")
+      this.showModal = true
+    }else{ //允许授权
+      let that = this;
+      let iv = e.detail.iv;
+      let encryptedData = e.detail.encryptedData;
+      let signature = this.$parent.globalData.userInfo.signature;
+      let rawData = this.$parent.globalData.userInfo.rawData;
+      let sessionKey = this.sessionKey
+      let param = {
+        signature:signature,
+        rawData:rawData,
+        encryptedData:encryptedData,
+        iv:iv,
+        sessionKey:sessionKey
+      }
+      apiPasePhoneF({ miniprogramParam: JSON.stringify(param) }).then(res => {
+        miniPro.showToast("绑定手机号成功")
+      }).catch(err => {
+      })
+    }
+  }
+  events = {
+    'addComEvent': (p1) => { this.buyNum = p1; this.$apply() },
+    'showModal': (value) => {
+      console.log(value)
+      this.showModal = value
+      this.$apply()
+    }
+  };
+  onShareAppMessage(res) {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+    }
+    let _goodsId = this.goodsId
+    // let _userId,_sk
+    //   _userId = this.userId
+    //   _sk = this.sk
+    return {
+      title: '新一代厨房专用智能净水器',
+      path: `/pages/packageIndex/goodsDetail/index?goodsId=${_goodsId}`, //&si=${_userId}&sk=${_sk}
+      imageUrl: this.shareObj.goodShareUrl
+    };
+  }
+  imgH(e){
+    let winWid = wx.getSystemInfoSync().windowWidth;//获取当前屏幕的宽度
+    this.Hei = winWid + "px";
+    this.$apply();
+  };
+  async onLoad(option) {
+    this.imgH();
+    if (option.si || option.sk ){//进入页面 分享者id  正常进入商品详情页
+      this.isUserId = option.si
+      this.isSk = option.sk
+      wepy.$instance.globalData.qrSk = option.sk
+      wepy.$instance.globalData.qrSi = option.si
+    }
+    if(option.custom_params){  //直播间进入商品详情页  参数有自定义参数custom_params
+      let roomParam = decodeURIComponent(option.custom_params) //直播间进来获取的自定义custom_params参数 值有 si sk room_id
+      let par = JSON.parse(decodeURIComponent(roomParam)) //解码后的参数转为对象格式 {si: 19267, sk: "7kb23hkcef7",room_id:1}
+      this.isUserId = par.si || ""
+      this.isSk = par.sk || ""
+      this.room_id = option.room_id || ""  //wepy.$instance.globalData
+      wepy.$instance.globalData.qrSk = par.sk
+      wepy.$instance.globalData.qrSi = par.si
+    }
+    if(option.collect_room_id){ //直播间进入详情页   点了收藏  在我的收藏列表页或者足迹列表页 进入该页面
+      this.room_id = option.collect_room_id || ""
+    }
+    // `/pages/packageIndex/goodsDetail/index?goodsId=${_goodsId}` // 没有"scene"字段只有goodsId字段 表示通过按钮分享 前端页面跳转
+    // `/pages/packageIndex/goodsDetail/index?scene=${_goodsId}` // 有"scene"字段 表示通过图片方式分享  分享跳转 => 请求接口获取商品ID => 获取商品上去
+    // 【参数】例子1：goodsId=20190605151323725725
+    // 【参数】例子2：scene=c#10045@s#20190605151323725725    格式：c#userId@s#goodsId
+    let scene = option.scene  //分享图片小程序码进入页面
+    if (scene) { //如果有这个字段表示图片分享  反之则是直接通过按钮分享
+      this.shareScene = scene
+      wepy.$instance.globalData.qrScene = scene || ''
+      this.$apply();
+      setTimeout(() => {
+        this.apiGetGoodsIdByShareFA(this.apiGetGoodsIdByShareFA.bind(this))
+      }, 10);
+    } else {
+      this.goodsId = option.goodsId
+      this.apiGetGoodsDetailsA(this.apiGetGoodsDetailsA.bind(this))
+      this.$apply();
+    }
+  }
+  onShow() {
+    // this.room_id = wepy.$instance.globalData.room_id || ""
+    this.apiGetInfoFA(this.apiGetInfoFA.bind(this)) //获取userId
+    this.createData.orderDetail = []
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import '../../../common/wxParse/wxParse.wxss';
+@import './index'
+</style>

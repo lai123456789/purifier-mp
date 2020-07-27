@@ -1,0 +1,47 @@
+<template>
+  <view class="modal">
+    <view class="modal-mask" @tap="hideModal">
+    </view>
+    <block>
+      <slot></slot>
+      <slot name="cancelOrder_reason"></slot> <!--  显示取消订单的弹框-->
+    </block>
+  </view>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class AddCom extends wepy.component {
+  data = {
+    Active: '1',
+    // showModal:true,  //优先
+  }
+  props = {
+    showModal:{ //本单使用积分抵扣了多少现金
+      type: Boolean,
+      default: 0
+    }
+  }
+  methods = {
+    hideModal(){
+      this.showModal = false
+      this.$emit('showModal', false);
+    }
+  };
+
+  watch = {
+
+  }
+  onLoad() {
+    console.log(this.showModal)
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import './index.scss'
+@import '../../common/css/rpx.scss';
+@import '../../common/css/const.scss';
+@import '../../common/css/mixin.scss';
+</style>

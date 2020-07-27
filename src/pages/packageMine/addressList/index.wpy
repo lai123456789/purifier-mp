@@ -1,0 +1,94 @@
+<template>
+  <view class='address-list-ctner'>
+      <view class="addl-new" @tap="toAddressA">
+        <image src='../../../images/location_a.png'></image>
+        <text>新增收货地址</text>
+        <image src='../../../images/unfold.png'></image>
+      </view>
+
+      <view class="addl-list-outer">
+
+        <view hover-class='icx-click-hover' class="addl-list-item" wx:for="{{addressList}}" wx:key="index" @tap="checked({{item}})">
+          <!-- <image wx:if="{{item.isChecked}}" class="addl-img-a" src='../../../images/selected.png'></image>
+          <image wx:else class="addl-img-a" src='../../../images/uncheck.png'></image> -->
+          <view class="addl-list-word">
+            <view> <text style="margin-right: 10rpx">{{item.name}}</text> <text>{{ item.phone}}</text> </view>
+            <view>收货地址：{{item.province}}{{item.city}}{{item.district}}{{item.address}} </view>
+          </view>
+          <view class="addl-def" wx:if="{{item.def == 1}}">
+            默认
+          </view>
+          <view class="addl-edit"  @tap.stop="toAddressEditA({{item.id}})">
+              <image class="addl-img-b" src='../../../images/edit.png'></image>
+          </view>
+        </view>
+      </view>
+      <!-- <button @tap='modifyA'>修改地址</button> -->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { apiAddressFindAllF } from '../../../services/mine/index'
+export default class AddressList extends wepy.page {
+  config = {
+    navigationBarTitleText: '管理收货地址'
+  };
+  components = {
+  };
+  data = {
+    addressList: []
+  };
+  methods = {
+    checked(item) {
+      let _address = `${item.province} ${item.city} ${item.district} ${item.address}`
+      let _addressId = item.id
+      let _name = item.name
+      let _phone = item.phone
+      wepy.$instance.globalData.addressObj.addressStr = _address
+      wepy.$instance.globalData.addressObj.addressId = _addressId
+      wepy.$instance.globalData.addressObj.name = _name
+      wepy.$instance.globalData.addressObj.phone = _phone
+      this.$apply()
+      setTimeout(() => {
+        wepy.navigateBack();
+      }, 300);
+    },
+    toAddressEditA(id) {
+      wepy.navigateTo({ url: `/pages/packageMine/addressEdit/index?id=${id}` });
+    },
+    toAddressA() {
+      wepy.navigateTo({ url: `/pages/packageMine/addressEdit/index` });
+    },
+    modifyA() {
+      let pages = getCurrentPages();
+      let prevPage = pages[pages.length - 2]; // 上一级页面
+      prevPage.addressStr = '45456'
+      prevPage.setData({
+        addressStr: 'dskjl',
+        addressId: '',
+        name:'',
+        phone:''
+      })
+      // this.$wxpage = prevPage;
+      this.$apply();
+    }
+  }
+  apiAddressFindAllA(fun) {
+    apiAddressFindAllF(fun).then((result) => {
+      // let { rows } = result
+      this.addressList = result.map(val => {
+        val.isChecked = val.def == 1 ? true : false
+        return val
+      })
+      this.$apply()
+    }).catch(() => { });
+  }
+  onLoad() {
+    this.apiAddressFindAllA(this.apiAddressFindAllA.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

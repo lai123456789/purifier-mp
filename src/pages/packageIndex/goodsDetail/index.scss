@@ -1,0 +1,569 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+
+page{
+    height: 100%;
+}
+.goods-detail-ctner{
+    height: 100%;
+    padding-bottom: rpx(100);
+    position: relative;
+    .goods-con-outer {
+        height: 100%;
+        overflow: auto;
+    }
+   .goods-banner {
+       //height: rpx(438);
+        swiper,
+        swiper-item,
+        swiper-item image {
+            width: 100%;
+        }
+     /*修改  start*/
+     swiper-item image {
+       height: 100%;
+     }
+     /*修改  end*/
+
+     .active{
+           height: 100%;
+         }
+   }
+   .goods-des-outer {
+       padding: rpx(20) rpx(46);
+       .price-outer {
+           display: flex;
+
+           align-items: center;
+           .price-a {
+                flex: 1;
+                // font-size: 0;
+                width: 100%;
+                .price-a-t {
+                  overflow-y: hidden;
+                    width: 100%;
+                    .price-1 {
+                        font-weight: bolder;
+                        font-size: $size-six;
+                        color: #000;
+                        margin-right: rpx(28);
+                    }
+                    .price-2 {
+                        font-size: $size-three;
+                        color:$color-word-alarm;
+                        font-weight: bold;
+                    }
+                    image {
+                        height: rpx(25);
+                        width: rpx(74);
+                        vertical-align: middle;
+                        margin-left: rpx(12);
+                    }
+                }
+                .price-a-b {
+                  overflow-y: hidden;
+                  width: 100%;
+                    text {
+                        font-size: $size-unit;
+                        color: $color-word-three;
+                        text-decoration: line-through;
+                    }
+                }
+
+           }
+           .price-c,
+           .price-b {
+               text-align: center;
+               padding: 0 rpx(20);
+                image {
+                    width: rpx(38);
+                    height: rpx(38);
+                    margin-bottom: rpx(6);
+                }
+                view {
+                    font-size: $size-one;
+                    overflow-y: hidden;
+                }
+           }
+       }
+       .desc-outer {
+           display: flex;
+           margin: rpx(48) 0 rpx(10) 0;
+          padding-top: rpx(10);
+         overflow-y: hidden;
+         text:nth-of-type(1) {
+                font-size: $size-three;
+                font-weight: bolder;
+                color: #000;
+                flex: 1;
+           }
+           text:nth-of-type(2) {
+                font-size: $size-one;
+                font-weight: bolder;
+                color: $color-word-four;
+            }
+        }
+        .desc-sub-outer {
+            color: $color-word-four;
+            font-size: $size-one;
+          overflow-y:hidden
+        }
+   }
+   .G-line {
+       height: rpx(8);
+       background: #EDEDED
+   }
+    .goods-des-comment{
+      border-bottom: rpx(8) solid #EDEDED;
+      .commentIndex{
+        padding: rpx(20) rpx(46);
+        .g1{
+          display: flex;
+          justify-content: space-between;
+          view:nth-of-type(1){
+            font-weight: bold;
+            font-size: rpx(28);
+          }
+          view:nth-of-type(2){
+            color: #FF7F00;
+            font-size: rpx(24);
+          }
+        }
+        .g-content{
+          margin-top: rpx(5);
+          view{
+            margin: rpx(7) 0;
+          }
+          .g-c1{
+            display: flex;
+            align-items: center;
+            image{
+              width: rpx(60);
+              height: rpx(60);
+              border-radius: 50%;
+              margin-right: rpx(8);
+            }
+            view{
+              .gc1{
+                overflow: hidden; //文本超出 省略号代替
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: rpx(140);//文本超出 省略号代替
+                font-size:rpx(22);
+                font-family:PingFang SC;
+                font-weight:500;
+                color:rgba(102,102,102,1);
+                line-height:rpx(28);
+              }
+              .gc2{
+                image{
+                  width: rpx(18);
+                  height: rpx(17);
+                  margin-right: rpx(5);
+                }
+              }
+            }
+          }
+          .g-c2{
+            font-size:rpx(24);
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(0,0,0,1);
+            line-height:rpx(28);
+          }
+          .g-c3{
+            font-size:rpx(20);
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(102,102,102,1);
+            line-height:rpx(28);
+          }
+        }
+      }
+    }
+   .member-outer {
+       height: rpx(74);
+       padding: 0 rpx(44);
+       .member-bg {
+           position: relative;
+           height: 100%;
+           line-height: rpx(74);
+           text-align: center;
+           background:linear-gradient(101deg,rgba(57,57,56,1),rgba(0,0,0,1));
+           border-radius: rpx(12);
+           overflow: hidden;
+           padding-right: rpx(182);
+           color: #FFF;
+           font-size: $size-one;
+       }
+       .btn {
+           position: absolute;
+           top: 0;
+           right: rpx(-2);
+           height: 100%;
+           width: rpx(182);
+           background:rgba(248,222,173,1);
+           border-radius: rpx(10);
+           line-height: rpx(74);
+           image {
+               width: rpx(11);
+               height: rpx(18);
+               margin-left: rpx(6);
+           }
+           text {
+               color: $color-word-one;
+           }
+       }
+   }
+
+   .goods-detail image {
+       width: 100%;
+   }
+   .goods-bottom {
+       position: fixed;
+       @include borderTopOnePx;
+       left: 0;
+       bottom: 0;
+       width: 100%;
+       height: rpx(98);
+       display: flex;
+       background: #FFF;
+       .gb-kf,
+       .gb-cart {
+           display: flex;
+           align-items: center;
+            .icx-btn {
+                background: #FFF;
+                padding: 0;
+                line-height: 1;
+                border-radius: 0;
+                view {
+                    margin-top: rpx(8)
+                }
+            }
+       }
+       .gb-kf {
+           padding: rpx(12) 0;
+           width: rpx(144);
+           overflow: hidden;
+            .icx-btn {
+                image {
+                    width: rpx(32);
+                    height: rpx(32);
+                }
+            }
+       }
+       .gb-cart {
+           position: relative;
+           width: rpx(142);
+           padding: rpx(12) 0;
+           @include borderRightOnePx;
+           @include borderLeftOnePx;
+           .icx-btn {
+                image {
+                    width: rpx(32);
+                    height: rpx(32);
+                }
+            }
+       }
+       .gb-tuan,
+       .gb-join,
+       .gb-buy {
+            flex: 1;
+            border-radius: rpx(10);
+            text-align: center;
+            line-height: rpx(98);
+            font-weight: bolder;
+       }
+       .gb-join {
+            background:rgba(238,238,238,1);
+          view{
+            line-height: rpx(35);
+            overflow: hidden !important;
+          }
+         view:nth-of-type(1){
+           margin-top: rpx(15);
+         }
+         view:nth-of-type(2){
+           font-size: rpx(32);
+         }
+       }
+       .gb-buy {
+            background:#FF2A3F;
+            color: #FFF;
+         view{
+           line-height: rpx(35);
+           overflow: hidden !important;
+         }
+         view:nth-of-type(1){
+           margin-top: rpx(15);
+         }
+         view:nth-of-type(2){
+           font-size: rpx(32);
+         }
+       }
+   }
+}
+
+.goods-spc-outer {
+  position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .4);
+    z-index: 10;
+    .goods-spc-con {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        min-height: rpx(700);
+        background: #FFF;
+      border-top-left-radius: rpx(40);
+      border-top-right-radius: rpx(40);
+        .goods-des{
+            position: relative;
+            min-height: rpx(124);
+            display: flex;
+            padding: rpx(16) rpx(44) rpx(18) rpx(44);
+            @include borderBottomOnePx;
+            .des-l {
+                width: rpx(124);
+                margin-right: rpx(24);
+              overflow-y: hidden;
+
+              image {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .des-r {
+                flex: 1;
+                view:nth-of-type(1) {
+                  overflow-y: hidden;
+                  color: $color-word-alarm;
+                    font-size: $size-unit;
+                }
+                view:nth-of-type(2) {
+                    color: #999;
+                    font-size: rpx(16);
+                    margin-top: rpx(12);
+                    margin-bottom: rpx(30);
+                  overflow-y: hidden;
+                }
+                view:nth-of-type(3) {
+                  overflow-y: hidden;
+                  font-size: rpx(24);
+                }
+            }
+        }
+
+        .goods-pop-same {
+            position: relative;
+            padding: rpx(16) rpx(44) rpx(18) rpx(44);
+            // height: auto;
+            min-height: rpx(10);
+            @include borderBottomOnePx;
+            .goods-pop-title {
+              overflow-y: hidden;
+                font-size: $size-one;
+                margin-bottom: rpx(12);
+            }
+            .goods-outer-same {
+                overflow: hidden;
+            }
+            .goods-color-outer {
+                height: auto;
+                overflow: hidden;
+            }
+            .small {
+                padding: rpx(8) rpx(20);
+                border-radius: rpx(8);
+                background:rgba(238,238,238,1);
+                float: left;
+                margin-right: rpx(12);
+                margin-bottom: rpx(8);
+            }
+            .small.active {
+                background: $color-word-alarm;
+                color: #FFF;
+            }
+            &.goods-buy-num {
+                display: flex;
+                align-items: center;
+                .goods-pop-title {
+                    flex: 1;
+                }
+                .goods-pop-title {
+                    margin: 0;
+                }
+            }
+        }
+        .goods-pop-same.goods-buy-btn {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            @include borderTopOnePx;
+            button {
+                width: 76%;
+                border-radius: rpx(30);
+                margin-left: 12%;
+            }
+        }
+    }
+}
+
+.share-outer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    background: rgba(0, 0, 0, .4);
+    z-index: 999;
+    .share-inner {
+        height: 100%;
+        width: 100%;
+        padding-bottom: rpx(166);
+        .share-img-con {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            image {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: rpx(562);
+                height: rpx(746);
+                border-radius: rpx(10);
+            }
+        }
+        .share-btn-wrap {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            background: #FFF;
+            width: 100%;
+            height: rpx(200);
+            .sure-btns {
+                height: rpx(110);
+                display: flex;
+                align-items: center;
+                .btn {
+                    flex: 1;
+                    text-align: center;
+                    .icx-clear-after-border {
+                        padding: 0;
+                        margin: 0;
+                        line-height: 1;
+                        width: 100%;
+                        border-radius: 0;
+                        background: #FFF;
+                    }
+                    image {
+                        width: rpx(48);
+                        height: rpx(48);
+                        margin-bottom: rpx(6);
+                    }
+                    view {
+                        width: 100%;
+                    }
+                }
+            }
+            .cancel-btn {
+                height: rpx(92);
+                line-height: rpx(92);
+                background:rgba(238,238,238,1);
+                opacity:0.57;
+                text-align: center;
+                overflow-y: hidden;
+            }
+
+            .open-btn-wrap {
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                height: 100%;
+                width: 100%;
+                .icx-btn-same-sure {
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    font-size: $size-six;
+                    justify-content: center;
+                }
+            }
+
+        }
+    }
+}
+/* 自定义模态框 start */
+.modal-mask {  //阴影
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: 0.5;
+  overflow: hidden;
+  z-index: 2147483640;
+  color: #fff;
+}
+.modal-content {  //弹框
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  z-index: 2147483647;
+  overflow: scroll;
+  overflow-x: hidden;
+  background: #fff;
+  border-radius: rpx(15);
+  width: rpx(600);
+  height: rpx(560);//没有设置高度 有时有些机型会不显示弹框内容  例如苹果6s 安卓有没有都能显示
+  .content-exchang{
+    padding: rpx(20);
+    .btn-content{
+      .text{
+        text-align: center;
+        .text1{
+          overflow: hidden;
+          image{
+            width: rpx(260);
+            height: rpx(321);
+          }
+        }
+        .text2{
+          font-size: rpx(26);
+          line-height: rpx(60);
+          color: #333333;
+        }
+        .text3{
+          font-size: rpx(26);
+          line-height: rpx(30);
+          margin-bottom: rpx(30);
+          color: #333333;
+          overflow: hidden;
+        }
+        .text4{
+          font-weight: bold;
+          font-size: rpx(28);
+          width: rpx(450);
+          height: rpx(65);
+          background: #1AAC19 !important;
+        }
+      }
+    }
+
+  }
+}
+
+/* 自定义模态框 end */
+
+

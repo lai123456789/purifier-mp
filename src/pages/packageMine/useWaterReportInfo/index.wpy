@@ -1,0 +1,253 @@
+<template>
+  <view class='address-edit-ctner'>
+    <ec-canvas id="mychart-dom-bar" canvas-id="mychart-bar" ec="{{ ec }}"></ec-canvas>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import * as echarts from '../../../utils/ec-canvas/echarts';
+  import { apiGetInfoListF } from '../../../services/information';
+  import { getUseWaterReportF } from '../../../services/equipment';
+  let chart = null;
+
+  function initChart(canvas, width, height, dpr) {
+    chart = echarts.init(canvas, null, {
+      width: width,
+      height: height,
+      devicePixelRatio: dpr // new
+    });
+    canvas.setChart(chart);
+    var colors_right_2 = ['#5793f3', '#d14a61', '#675bba','#ba741c'];
+    var option = {
+      color: ['#37a2da', '#32c5e9', '#67e0e3'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross'
+        }
+      },
+      legend: {
+        data: []
+      },
+      grid: {
+        left: 20,
+        right: 20,
+        bottom: 15,
+        top: 40,
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: 'category',
+          axisTick: {
+            alignWithLabel: true
+          },
+          data: []
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          name: '流量',
+          min: 0,
+          max: 10,
+          position: 'left',
+          axisLine: {
+            lineStyle: {
+              color: colors_right_2[0]
+            }
+          },
+          splitLine:{
+            show:false
+          },
+          axisLabel: {
+            formatter: '{value} L'
+          }
+        },
+        {
+          type: 'value',
+          name: 'tds(mg/L)',
+          min: 0,
+          max: 200,
+          position: 'right',
+          axisLine: {
+            lineStyle: {
+              color: colors_right_2[1]
+            }
+          },
+          axisLabel: {
+            formatter: '{value}'
+          }
+        }
+      ],
+      series: [
+        {
+          name: '原水',
+          type: 'bar',
+          data: [],
+
+        },
+        {
+          name: '净水',
+          type: 'bar',
+          data: []
+        },
+        {
+          name: '原水TDS',
+          type: 'line',
+          yAxisIndex: 1,
+          data: []
+        },
+        {
+          name: '净水TDS',
+          type: 'line',
+          yAxisIndex: 1,
+          data: []
+        }
+      ]
+    };
+    chart.setOption(option);
+    return chart;
+  }
+  export default class useWaterReportInfo extends wepy.page {
+  config = {
+    navigationBarTitleText: '用水详情',
+    // navigationBarBackgroundColor:'#289DD6',
+    pageOrientation: "landscape",//设置横屏显示
+    "usingComponents": {
+      "ec-canvas": "../../../utils/ec-canvas/ec-canvas"
+    }
+  };
+  components = {
+  };
+  data = {
+    ec: {
+      onInit: initChart
+    },
+    id:"",
+    month:"",
+    year:""
+  }
+
+  computed = {
+
+  }
+  methods = {
+
+  }
+  getUseWaterReportFA(){
+    let id = this.id
+    let month = this.month
+    let year = this.year
+    getUseWaterReportF(id,year,month).then(reslut => {
+      // var colors_right_2 = ['#5793f3', '#d14a61', '#675bba','#ba741c'];//数据条颜色
+      var colors_right_2 = ['#E17171', '#57BAF3', '#55E384', '#39F1EF'];
+      var option2 = {
+        // color: ['#37a2da', '#32c5e9', '#67e0e3'],//原水，净水，原水TDS，净水TDS banner颜色
+        color: ['#E17171', '#57BAF3', '#55E384', '#39F1EF'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross'
+          }
+        },
+        legend: {
+          data: ['原水', '净水', '原水TDS','净水TDS']
+        },
+        grid: {
+          left: 20,
+          right: 20,
+          bottom: 30,
+          top: 40,
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            name:'日期',
+            nameLocation:'start',
+            nameTextStyle:{
+              padding:[25,-20,0,0]
+            },
+            axisTick: {
+              alignWithLabel: true
+            },
+            data: reslut.date
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '用水量 L',
+            position: 'left',
+            axisLine: {
+              lineStyle: {
+                color: 'black'
+              }
+            },
+            splitLine:{
+              show:false
+            },
+            axisLabel: {
+              formatter: '{value}'
+            }
+          },
+          {
+            type: 'value',
+            name: 'TDS mg/L',
+            position: 'right',
+            axisLine: {
+              lineStyle: {
+                color: "black"
+              }
+            },
+            axisLabel: {
+              formatter: '{value}'
+            }
+          }
+        ],
+        series: [
+          {
+            name: '原水',
+            type: 'bar',
+            data: reslut.flowTap
+          },
+          {
+            name: '净水',
+            type: 'bar',
+            data: reslut.flowPurified
+          },
+          {
+            name: '原水TDS',
+            type: 'line',
+            yAxisIndex: 1,
+            data: reslut.tapTds
+          },
+          {
+            name: '净水TDS',
+            type: 'line',
+            yAxisIndex: 1,
+            data: reslut.tdsPurified
+          }
+        ]
+      };
+      setTimeout(()=>{
+        chart.clear()
+        chart.setOption(option2);
+      },1500)
+    }).catch(() => { })
+
+  }
+
+  onLoad(option) {
+    this.id = option.id
+    this.year = option.year
+    this.month = option.month
+    this.getUseWaterReportFA(this.getUseWaterReportFA.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

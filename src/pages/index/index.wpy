@@ -1,0 +1,184 @@
+<template>
+  <view class="index-ctner container-same">
+    <view style="height: 100%;">
+      <view class="ix-banner-wrap">
+      <swiper
+        indicator-dots="{{indicatorDots}}"
+        autoplay="{{autoplay}}"
+        interval="{{interval}}"
+        duration="{{duration}}"
+        circular = 'true'
+        indicator-color="{{indicatorColor}}"
+        indicator-active-color="{{indicatorActiveColor}}"
+        @change="swiperChange"
+      >
+        <block wx:for="{{homeBanners}}" wx:key='index' wx:for-item="item">
+          <swiper-item @tap='swiperA({{item}})'>
+            <image src="{{item.bannerPath}}" class="slide-image" width="355" height="150" />
+          </swiper-item>
+        </block>
+      </swiper>
+      <view class="dots"> <!--  修改自定义轮播圆点样式 -->
+        <block wx:for="{{homeBanners}}" wx:key="index">
+          <view class="dot {{index == swiperCurrent ? 'active' : ''}}"></view>
+        </block>
+      </view>
+    </view>
+      <view style="width: 100%;height: 7rpx;background: #999999"></view>
+      <view class="ix-button">
+        <button @tap="toTryUse({{Introduce}})" wx:if="{{!Isapply}}">申请试用</button> <!-- -->
+        <button @tap="toBuy({{Introduce}})">立即购买</button>
+      </view>
+      <view class="pro_detailImg">
+<!--        <rich-text nodes="{{Introduce.goodsDetail}}"></rich-text>-->
+        <import src="../../common/wxParse/wxParse.wxml"/>
+        <view class="tale-wxParse">
+          <template is="wxParse" data="{{wxParseData:taleDetail.nodes}}"/>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import '../../common/js/authProcess.js';
+import {
+  apiGetHomeDataF, apigetIntroduceF,getIsApplyF
+} from '../../services/index';
+import {
+  INDICATOR_COLOR,
+  INDICATOR_ACTIVE_COLOR
+} from '@/common/js/config';
+import miniPro from '@/utils/wepy-pro.js';
+import WxParse from '../../common/wxParse/wxParse.js'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '新一代厨房专用智能净水器',
+    enablePullDownRefresh:true
+  };
+  components = {
+  };
+  data = {
+    currenIndex: 0,
+    pageParamsLike: {
+      page: 0,
+      limit: 20,
+      goodsLabels:"",
+      categoryId: '',
+      keyword: '',
+      hasMore:false
+    },
+    indicatorDots: false,
+    autoplay: true,
+    interval: 5000,
+    duration: 1000,
+    indicatorColor: INDICATOR_COLOR,
+    indicatorActiveColor: INDICATOR_ACTIVE_COLOR,
+    swiperCurrent: 0,
+    homeBanners: [], // 首页banner
+    currentId:"",
+    Introduce:{},
+    Isapply:''
+  };
+
+  computed = {};
+
+  methods = {
+    swiperA(item){ //跳转广告对应页面
+      let linkType = item.linkType
+      switch (linkType) {
+        case 1: //商品详情页
+          miniPro.toGoodsDetail(item.link)
+          break;
+        case 2: //外部链接h5页
+          miniPro.toWebView(item.link)
+          break;
+        case 3: //小程序页面地址
+          wepy.navigateTo({ url: item.link });
+          break;
+        case 4: //商品标签
+          wepy.navigateTo({ url: `/pages/packageIndex/search/index?goodsLabels=${item.link}` });
+          break;
+        case 5: //商品分类
+          wepy.navigateTo({ url: `/pages/packageIndex/search/index?categoryId=${item.link}` });
+          break;
+      }
+    },
+    toTryUse(e){
+      wepy.navigateTo({ url: `/pages/packageIndex/applyAtrialForm/index?goodsId=${e.id}` });
+    },
+    toBuy(e){
+      wepy.navigateTo({ url: `/pages/packageMine/sureOrder/index?goodsId=${e.id}` });
+    },
+  }
+  getIsApply(fun) {
+    getIsApplyF(fun).then(msg => {
+      this.Isapply = msg
+      this.$apply()
+    }).catch(() => { })
+  }
+  getIntroduceList(fun) {
+    let _self = this
+    apigetIntroduceF(fun).then(msg => {
+      this.Introduce = msg
+      console.log(msg.goodsDetail)
+      WxParse.wxParse('taleDetail', 'html', msg.goodsDetail, _self, 5)
+      this.$apply()
+    }).catch(() => { })
+  }
+  swiperChange(e) {
+    let current = e.detail.current;
+    this.swiperCurrent = current
+    this.$apply()
+  }
+  apiGetHomeDataFA(fun) {
+    apiGetHomeDataF(fun).then(msg => {
+      let { homeBanners } = msg
+      this.homeBanners = homeBanners
+      this.$apply()
+    }).catch(() => { })
+  }
+  async onLoad(option) {
+    this.apiGetHomeDataFA(this.apiGetHomeDataFA.bind(this))
+    this.getIntroduceList(this.getIntroduceList.bind(this))
+    this.getIsApply(this.getIsApply.bind(this))
+  }
+  onShow() {
+
+  }
+  onShareTimeline(res){ //分享到朋友圈
+    console.log(res)
+    return {
+      title: '',
+      query: '',
+      imageUrl: ''
+    };
+  }
+  onShareAppMessage(res) {  //分享给好友
+    if (res.from === 'button') {
+      // 来自页面lugin-privat内转发按钮
+    }
+    let qrScene = this.qrScene || ''
+    let _userId = this.userId
+    let _sk = this.sk //10长度随机码 字母数字组合
+    let url = `/pages/index/index?si=${_userId}&sk=${_sk}&qrScene=${qrScene}`;
+    return {
+      title: '新一代厨房专用智能净水器',
+      path: url,
+      imageUrl: ''
+    };
+  }
+  onPullDownRefresh(){
+    this.apiGetHomeDataFA(this.apiGetHomeDataFA.bind(this))
+    this.apiCategoryByParentFA(this.apiCategoryByParentFA.bind(this))  //分类列表
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+      miniPro.showToast("刷新成功")
+    },1500)
+  };
+}
+</script>
+<style lang="scss">
+@import './index.scss';
+
+</style>

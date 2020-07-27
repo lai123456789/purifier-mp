@@ -1,0 +1,57 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page{
+    height: 100%;
+}
+.pay-success-ctner {
+    .suc-top {
+        width: 100%;
+        text-align: center;
+        position: relative;
+        .top-a {
+            display: inline-block;
+            width: rpx(128);
+            height: rpx(128);
+            margin: rpx(32) 0
+        }
+      .top-b{
+        font-size: rpx(30);
+        font-weight: bold;
+      }
+      .top-c{
+        font-size: rpx(26);
+      }
+        .top-b,
+        .top-c {
+            line-height: rpx(50);
+            color: #333333;
+        }
+        .top-d {
+            position: absolute;
+            left: 50%;
+            bottom: 0%;
+            width: rpx(148);
+            height: rpx(148);
+            transform: translate(-50%, 50%);
+            border: rpx(4) solid #FFF;
+            border-radius: 50%;
+            overflow: hidden;
+            image {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+    }
+    .pat-btn-wrap {
+        height: auto;
+        display: flex;
+        margin-top: rpx(150);
+        justify-content: center;
+        button {
+            width: 30%;
+        }
+    }
+}
+

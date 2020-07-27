@@ -1,0 +1,386 @@
+@import '../../../common/css/rpx.scss';
+@import '../../../common/css/const.scss';
+@import '../../../common/css/mixin.scss';
+page,
+.index-ctner{
+  height: 100%;
+  background:#FFFFFF;
+  //background: transparent;
+  .ix-banner-wrap{
+    swiper{
+      height: rpx(1000);
+      height: rpx(1100);
+      .sw1{
+        .swiper-item{
+          .top{
+            margin-top: rpx(40);
+            height: rpx(385);
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            align-content: space-between;
+            .t1,.t3{
+              align-self:flex-end;
+              text-align: center;
+              view{
+                line-height: rpx(35);
+              }
+              view:nth-of-type(1){
+                text:nth-of-type(1){
+                  color: #0972A9;
+                  font-weight: bold;
+                  //font-size: rpx(54);
+                  font-size: rpx(40);
+                }
+                text:nth-of-type(2){
+                  color: #0972A9;
+                  font-size: rpx(24);
+                }
+              }
+              view:nth-of-type(2){
+                color: #0972A9;
+                font-size: rpx(24);
+                white-space: nowrap;
+                letter-spacing: rpx(1);
+
+              }
+            }
+            .t1{
+              margin-left: rpx(30);
+            }
+            .t3{
+              margin-right: rpx(30);
+            }
+            //开始
+            /* 波纹进度 */
+
+            // 进度圆大小
+            $progress-height: rpx(320) !default;
+
+            // 文字大小
+            $progress-font:rpx(68) !default;
+            // 进度颜色
+            $progress-colors: (
+              blue:               #54B1DC,
+              orange:             #FF744A,
+              purple:             #8350D8,
+              cyan:               #19C9CB
+            ) !default;
+
+            // 进度圆容器
+            .wave-progress {
+              text-align: center;
+              margin-top: rpx(-25);
+              // 进度圆单元
+              > view {
+                border: rpx(15) solid #1996CA;
+                //display: inline-block;
+                list-style: none;
+                width: $progress-height;
+                height: $progress-height;
+                border-radius: 50%;
+                position: relative;
+                overflow: hidden;
+                z-index: 0;
+                // 为方便示例演示，添加单元间距
+                margin: 15px;
+              }
+            }
+
+            // 波纹
+            .wave {
+              position: absolute;
+              left: -28rpx;
+              //width: 100%;
+              //height: 100%;
+              width: rpx(360);
+              height: rpx(320);
+              // 用伪元素绘制两个波纹容器
+              &::before,
+              &::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                z-index: 10;
+
+                // 设置大小合适的圆形容器(足够覆盖整个进度圆)
+                width: 800px;
+                height: 800px;
+                border-radius: 45%;
+
+                // 一定透明度的白色背景色
+                background-color: rgba(255, 255, 255, .8);
+
+                // 挪到合适的位置
+                transform: translateX(-50%) rotate(0);
+
+                // 添加旋转动画
+                animation: rotate 6s linear infinite;
+              }
+
+              // 通过重置一个波纹的圆角大小、动画执行时间、延迟间隔
+              // 来制造波纹动画的视觉差和时间差
+              &::after {
+                border-radius: 48%;
+                transform: translateX(-50%) rotate(0);
+                animation: rotate 10s linear -5s infinite;
+                z-index: 20;
+              }
+            }
+            .text-index{
+              //position: absolute;
+              //top: -48px;
+              //right: 106px;
+              display: flex;
+              justify-content: center;
+              margin-top: rpx(-90);
+              background: red;
+              width: 100%;
+              view{
+                white-space: nowrap;
+              }
+              // 进度值
+              .text {
+                position: absolute;
+                width: rpx(130);
+                display: flex;
+                justify-content: center;
+                height: 100%;
+                padding: 0;
+                //margin: 0 rpx(20);
+                z-index: 30;
+                font-weight: 900;
+                line-height: $progress-height;
+                color: #0972A9;
+                text:nth-of-type(1){
+                  font-size: $progress-font;
+                }
+                text:nth-of-type(2){
+                  margin-top: rpx(13);
+                  font-size: rpx(24);
+                }
+              }
+              // 净化率百分比文字
+              .text1 {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 30;
+                text-align: center;
+                font-size: rpx(24);
+                line-height: rpx(430);
+                color: #0972A9;
+              }
+              .text2 {  //优
+                //margin-left: rpx(45);
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 30;
+                text-align: center;
+                font-size: rpx(44);
+                font-weight: 900;
+                line-height: rpx(520);
+                color: #0972A9;
+              }
+              .text3 {  //水质指标
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 30;
+                line-height: rpx(670);
+                color: #0972A9;
+                left: rpx(-48);
+                text{
+                  position: absolute;
+                  top: rpx(-4);
+                  font-size: rpx(24);
+                }
+                image{
+                  width: rpx(25);
+                  height: rpx(25);
+                  margin-right: rpx(8);
+                  margin-top: rpx(5);
+                }
+                .blackText{
+                  color: #F6F6F6 !important;
+                }
+              }
+            }
+            .time-text{
+              color: #0972A9;
+            }
+            // 旋转动画
+            @keyframes rotate {
+              50% {
+                transform: translateX(-50%) rotate(180deg);
+              }
+
+              100% {
+                transform: translateX(-50%) rotate(360deg);
+              }
+            }
+
+            // 枚举进度颜色
+            @each $key, $value in $progress-colors {
+              .wave-#{$key} {
+                background-color: $value;
+
+                // 文字描边颜色与背景一致
+                .text::before {
+                  -webkit-text-stroke: 1px $value;
+                }
+              }
+            }
+
+            //结束
+          }
+          .center{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: rpx(130);
+            view{
+              text{
+                font-size: rpx(28);
+                font-weight: 800;
+              }
+            }
+            .c1{
+              text:nth-of-type(2){
+                color: $color-word-alarm;
+              }
+            }
+            .c2{
+              display: flex;
+              view{
+                font-size: rpx(28);
+                font-weight: 800;
+              }
+              view:nth-of-type(2){
+                color: $color-word-alarm;
+              }
+            }
+            .c3{
+              overflow: hidden;
+              .unable{
+                opacity:0.5;
+              }
+              switch{
+                transform:scale(0.7);
+                outline:none;
+                //.wx-switch-input{width:42px !important;height:22px !important;}
+                //.wx-switch-input::before{width:40px !important;height: 20px !important;}
+                //.wx-switch-input::after{width: 18px !important;height: 18px !important;}
+                //zoom: .7;
+              }
+              switch::after{
+                outline:none;
+              }
+            }
+          }
+          .bottom{
+            width: 100%;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            margin-top: rpx(150);
+            .icx-btn-colorBg-whiteText{
+              width: rpx(400);
+              height: rpx(60);
+              border-radius: rpx(30) !important;
+              background: #289DD6 !important;
+            }
+          }
+
+        }
+
+      }
+      .sw2{
+        .swiper-item{
+          view{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+          }
+        }
+        .swiper-center{
+          margin: rpx(50) 0;
+          display: flex;
+          width: 100%;
+          justify-content: space-around;
+          .c1{
+            view:nth-of-type(1){
+              color: #333333;
+              font-size: rpx(26);
+              line-height: rpx(50);
+            }
+            view:nth-of-type(2){
+              text-align: center;
+              color: #333333;
+              font-size: rpx(36);
+              font-weight: bold;
+            }
+
+          }
+        }
+        .swiper-bottom{
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          padding-top: rpx(40);
+          .bt{
+            text-align: center;
+            padding: 0 rpx(30);
+            border-right: rpx(2) solid #E0E0E0;
+            view{
+              white-space: nowrap;
+            }
+            view:nth-of-type(1){
+              white-space: nowrap;
+              color: #999999;
+            }
+            view:nth-of-type(2){
+              line-height: rpx(60);
+            }
+          }
+          .ct2{
+            view:nth-of-type(2){
+              font-size: rpx(28);
+              font-weight: bold;
+              color: $color-word-alarm;
+            }
+          }
+          .ct3{
+            view:nth-of-type(2){
+              font-size: rpx(34);
+              color: $color-word-alarm;
+              font-weight: bold;
+            }
+          }
+          .bb{
+            text-align: center;
+            padding: 0 rpx(30);
+            view{
+              white-space: nowrap;
+            }
+            view:nth-of-type(1){
+              color: #999999;
+            }
+            view:nth-of-type(2){
+              line-height: rpx(60);
+            }
+          };
+        }
+      }
+    }
+
+  }
+
+
+}
+
+
+

@@ -1,0 +1,99 @@
+<template>
+  <view class='tale-detail-ctner'>
+      <import src="../../../common/wxParse/wxParse.wxml"/>
+      <view class="tale-wxParse">
+        <template is="wxParse" data="{{wxParseData:taleDetail.nodes}}"/>
+      </view>
+      <view class="tale-btn">
+        <view class="tale-btn-1">
+          阅读 {{taleObj.readCount}}
+        </view>
+        <view class="tale-btn-1" @tap="toCollectA">
+          <image src='../../../images/icon_fabulous@2x.png'></image>
+          <view>{{taleObj.likeCount}}</view>
+        </view>
+      </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import {
+  apiTaleFindDetailsF,
+  apiTaleUnpatronizeF,
+  apiTalePatronizeF
+} from '../../../services/information';
+
+import miniPro from '../../../utils/wepy-pro'
+import WxParse from '../../../common/wxParse/wxParse.js'
+export default class TaleDetail extends wepy.page {
+  config = {
+    // navigationBarBackgroundColor: '#09103b',
+    // navigationBarTextStyle: '#FFF',
+    navigationBarTitleText: '详情'
+  };
+  components = {
+  };
+  data = {
+    taleId: '',
+    taleObj: {},
+    isCollect: false
+  };
+  methods = {
+    toGoodsDetailA() {
+      let _goodsId = this.taleObj.goodsId
+      let _groupPurchase = this.taleObj.groupPurchase
+      if (_goodsId) {
+        miniPro.toGoodsDetail(_goodsId, _groupPurchase)
+      }
+    },
+    toCollectA() {
+        this.apiTalePatronizeFA(this.apiTalePatronizeFA.bind(this))
+    }
+  }
+
+  apiTaleFindDetailsFA(fun) {
+    let _self = this
+    apiTaleFindDetailsF(this.taleId, fun).then((result) => {
+      this.taleObj = result
+      this.isCollect = result.patronize
+      WxParse.wxParse('taleDetail', 'html', result.taleContent, _self, 5)
+      this.$apply()
+    }).catch(() => { });
+  }
+
+  apiTalePatronizeFA(fun) {
+    apiTalePatronizeF({
+      id: this.taleId || ''
+    }, fun).then(msg => {
+      miniPro.showToast('点赞成功')
+      setTimeout(() => {
+        this.isCollect = true
+        this.apiTaleFindDetailsFA(this.apiTaleFindDetailsFA.bind(this))
+        this.$apply()
+      }, 1000);
+    }).catch(() => {
+      miniPro.showToast('点赞失败')
+    })
+  }
+  onLoad(option) {
+    this.taleId = option.id || ''
+    this.$apply()
+    this.apiTaleFindDetailsFA(this.apiTaleFindDetailsFA.bind(this))
+  }
+
+  onShareAppMessage(res) {
+    let _taleId = this.taleId
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+    }
+    return {
+      title: '新一代厨房专用智能净水器',
+      path: `/pages/packeInformation/taleDetail/index?id=${_taleId}`
+    };
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

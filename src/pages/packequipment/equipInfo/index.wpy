@@ -1,0 +1,374 @@
+<template>
+  <view class="index-ctner container-same">
+        <view class="ix-banner-wrap">
+      <swiper indicator-dots="{{indicatorDots}}" indicator-active-color="#F13939" indicator-color="#EEE"
+              autoplay="{{autoplay}}" duration="{{duration}}" @change="change">
+          <swiper-item class="sw1">
+            <view class="swiper-item ">
+              <view class="top">
+                <view class="t1">
+                  <view>
+                    <text wx:if="{{waterObj.mockTdsTap}}">{{waterObj.mockTdsTap}}</text>
+                    <text wx:else>0</text>
+                    <text>mg/L</text>
+                    </view>
+                  <view>自来水TDS值</view>
+                </view>
+                <view class="wave-progress">
+                  <view class="wave-blue">
+                    <view class="wave" style="bottom:{{waterPercent}}%;"></view>
+                    <view class="text-index">
+                      <view class="text">
+                        <text wx:if="{{waterPercent}}">{{waterPercent}}</text>
+                        <text wx:else>0</text>
+                        <text>%</text>
+                      </view>
+                      <view class="text1">净化率百分比</view>
+                      <view class="text2">优</view>
+                      <view class="text3">
+                        <image src="../../../images/icon1.png" @tap="toWater" wx:if="{{waterPercent >= 35}}"
+                        ></image>
+                        <image  wx:else src="../../../images/icon2.png" @tap="toWater"></image>
+                        <text class="{{waterPercent >= 35?'blackText':''}}">水质指标</text>
+                      </view>
+                    </view>
+
+                  </view>
+                  <text class="time-text">{{timeDown}}</text>
+                </view>
+
+                <view class="t3">
+                  <view>
+                    <text wx:if="{{waterObj.mockTdsPurified}}">{{waterObj.mockTdsPurified}}</text>
+                    <text wx:else>0</text>
+                    <text>mg/L</text>
+                  </view>
+                  <view>净化水TDS值</view>
+                </view>
+              </view>
+              <view class="center">
+                <view class="c1">
+                  <text>设备状态：</text>
+                  <block wx:if="{{leak_warn || leak_warn == 1}}">
+                    <text>漏水</text>
+                  </block>
+                  <block wx:else>
+                    <text wx:if="{{purifier.state == 1}}">待激活</text>
+                    <text wx:if="{{purifier.state == 2}}">正常</text>
+                    <text wx:if="{{purifier.state == 3}}">试用结束</text>
+                    <text wx:if="{{purifier.state == 4}}">解绑</text>
+                  </block>
+
+                </view>
+                <view class="c2">
+                  <view>工作状态：</view>
+                  <view wx:if="{{purifier.purifierHeartbeat.onlineState.desc}}">
+                    {{purifier.purifierHeartbeat.onlineState.desc}}
+                  </view>
+                  <view wx:else>未工作</view>
+                </view>
+                <view class="c3">
+                  <text>开关</text>
+                  <block wx:if="{{is}}">
+                    <switch checked="{{checked}}" @tap="switchChangeUnable"
+                      class="unable"      disabled="true"  color="#F13939"/>
+                  </block>
+                  <block wx:else>
+                    <switch checked="{{checked}}" bindchange="switchChange" color="#F13939"/>
+                  </block>
+                </view>
+              </view>
+              <view class="bottom">
+                <view class="icx-btn-colorBg-whiteText" @tap="toUseInfo">
+                  近期用水量
+                </view>
+              </view>
+
+            </view>
+          </swiper-item>
+        <swiper-item class="sw2">
+          <view class="swiper-item" style="display: {{showCanvas?'block':'none'}};"
+          >
+            <view>
+              <canvas style="text-align: center;width:330px;height:200px;"
+                      canvas-id="firstCanvas"></canvas>
+            </view>
+          </view>
+          <view class="swiper-center">
+            <view class="c1">
+              <view>节水总量</view>
+              <view>{{filterWaterIndex.save_tap}}L</view>
+            </view>
+            <view class="c1">
+              <view>净化水总量</view>
+              <view>{{filterWaterIndex.total_purified}}L</view>
+            </view>
+            <view class="c1">
+              <view>原水利用率</view>
+              <!--公式：净化水/自来水 utilizationRate 固定72.8-->
+              <view>72.8%</view>
+            </view>
+          </view>
+          <view class="swiper-bottom">
+            <view class="bt">
+              <view>开始时间</view>
+              <view>{{startTime}}</view>
+            </view>
+            <view class="bt ct2">
+              <view>有限期限</view>
+              <view>三年</view> <!--{{filter.longevity/12}}-->
+            </view>
+            <view class="bt  ct3">
+              <view>剩余可用天数</view>
+              <view>{{filter.availableDays}}</view>
+            </view>
+            <view class="bb">
+              <view>截止时间</view>
+              <view>{{endTime}}</view>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view>
+
+
+
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import miniPro from '@/utils/wepy-pro.js';
+import dateFormat from '../../../utils/base/dateFormat';
+
+import { apiWaterInfoF, apiFilterInfoF, apiInstructValveF } from '../../../services/equipment';
+export default class EquipInfo extends wepy.page {
+  config = {
+    navigationBarTitleText: '水质详情',
+    navigationBarBackgroundColor: '#289DD6',
+    navigationBarTextStyle: 'white',
+    enablePullDownRefresh:true
+  };
+  components = {
+  };
+  mixins = [];
+  data = {
+    leak_warn:"",
+    is:'',
+    timeDown:"",
+    showCanvas:true,
+    indicatorDots: true,
+    vertical: false,
+    autoplay: false,
+    duration: 500,
+    id:'',
+    bool:'',
+    waterObj:{},
+    purifier:{},
+    waterPercent:'',
+    checked:'',
+    utilizationRate:0,//原水利用率
+    filter:{},
+    filterWaterIndex:{},
+    startTime:'',
+    endTime:'',
+    filterLongevity:'', //滤芯总流量
+    filterUsevity:'', //已用流量
+  };
+  computed = {};
+
+  methods = {
+    change(e){
+      if(e.detail.current == 0){
+        this.showCanvas = false
+        this.$apply()
+        wx.setNavigationBarTitle({
+          title: "水质详情"
+        })
+      }else{
+        this.showCanvas = true
+        this.$apply()
+        wx.setNavigationBarTitle({
+          title: "滤芯详情"
+        })
+      }
+    },
+    toWater(){
+      wepy.navigateTo({url: `/pages/packequipment/waterTarget/index`})
+    },
+    toUseInfo(){
+      let id = this.id
+      wepy.navigateTo({url: `/pages/packequipment/useWaterToday/index?id=${id}`})
+    },
+    switchChangeUnable(){
+      console.log(this.is)
+      if(this.is !== ''){
+        miniPro.showToast("该设备为演示设备，无法操作！")
+        return
+      }
+    },
+    switchChange(e){ //阀门开关
+
+      let bool = '';
+      if (e.detail.value == true){
+        bool = "00"
+      }else{
+        bool = "01"
+      }
+      this.bool = bool
+      this.instructValve(this.instructValve.bind(this))
+    }
+  };
+  instructValve(fun){
+
+    let id = this.id
+    let param = {
+      state:this.bool
+    }
+    apiInstructValveF(id,param,fun).then((result) => {
+      miniPro.showToast("操作成功！")
+    }).catch(() => { });
+  }
+  testCanvas(){
+    // 使用 wx.createContext 获取绘图上下文 context 容器环境
+    let context = wx.createCanvasContext('firstCanvas')
+    const total = (this.filterLongevity).toFixed(1);//总的流量
+    const cur = this.filterWaterIndex.total_tap; //当前用了多少  原水量的值
+    const L = total - cur; //剩余
+    console.log(total,"total")
+    console.log(cur,"cur")
+    console.log(L,"L")
+    //画外周半圆环
+    context.strokeStyle = "#289DD6";// #BDE1EE
+    context.lineCap = "round";
+    context.lineWidth = 15;
+    context.beginPath();
+    context.arc(150, 150, 100, Math.PI, 2 * Math.PI);
+    context.stroke();
+    //画剩余使用流量数字 50000
+    context.font = "38px 微软雅黑";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillStyle = '#0972A9';
+    const width = (context.measureText(L).width).toFixed(1);
+    console.log(width,"width")
+    context.fillText(L, 150,125);
+    // context.fillText(`${L}L`, 150,125);
+    // //画L文字
+    context.font = "18px 微软雅黑";
+    context.textBaseline = "top";
+    // context.fillText("L", width / 2 + 320 / 2,120);
+    //画剩余使用流量文字
+    context.font = "12px 微软雅黑";
+    context.fillStyle = '#000000';
+    context.fillText("当前滤芯剩余使用流量 ( L )", 300 / 2,145);
+    //画总流量60000数字
+    context.textAlign = "right";
+    context.font = "12px 微软雅黑";
+    context.fillStyle = '#0972A9';
+    context.fillText(total, 310,130);
+    //画总流量文字
+    context.fillStyle = '#000000';
+    context.fillText("总流量", 300,145);
+    //画剩余百分比进度条 颜色
+
+    let percent = cur / total * 100;
+    if (percent > 100) {
+      percent = 100;
+    }
+    const rad = Math.PI / 100; //180°分为100份
+    context.strokeStyle = "#BDE1EE";//289DD6
+    context.beginPath();
+    context.arc(150, 150, 100, Math.PI, Math.PI + percent * rad);
+    context.stroke();
+    context.save();
+    //画百分比数字
+    context.beginPath();
+    let x;
+    if (percent >= 90){
+      x = 320 / 3 + Math.cos(Math.PI + percent * rad) * 100; //100为圆半径
+    }else if(percent <= 13){
+      x = 309 / 3 + Math.cos(Math.PI + percent * rad) * 100;
+    } else{
+      x = 320 / 2 + Math.cos(Math.PI + percent * rad) * 100;
+    }
+    let y = 150 + Math.sin(Math.PI + percent * rad) * 100;
+    context.fillStyle = '#0972A9';
+    context.fillText(percent.toFixed(1) + "%", x + 40, y - 15);
+    context.stroke();
+    context.draw()
+  }
+  apiWaterInfoFA(fun) {  //水质详情
+    let t = this
+    apiWaterInfoF(this.id,fun).then(reslut => {
+      let {immediate_flow,purifier,leak_warn} = reslut
+      this.waterObj = immediate_flow
+      // console.log("leak_warn")
+      // console.log(typeof leak_warn === 'undefined')
+      if(leak_warn){//表示预警信息
+        if(leak_warn.state == 1){  // 设备状态改为漏水
+          t.leak_warn = 1
+        }
+      }
+      this.purifier = purifier
+      this.waterPercent = (immediate_flow.mockPurifiedRate*100).toFixed(1)
+      this.checked = purifier.valveState == "00"?true:false
+      this.$apply()
+    }).catch(() => { })
+  }
+  apiFilterInfoFA(fun) {  //滤芯详情
+    apiFilterInfoF(this.id,fun).then(reslut => {
+      let {purifierClientVo,totalFlow} = reslut
+      this.filter = purifierClientVo
+      let total_purified = (totalFlow.total_purified/1000).toFixed(1)
+      let totol = {
+        total_purified:total_purified,//净化水总量
+        total_tap:(totalFlow.total_tap/1000).toFixed(1), //自来水总量
+        save_tap:(total_purified * 0.58).toFixed(1)
+      }
+      this.filterWaterIndex = totol
+      this.startTime = purifierClientVo.createTime.replace(/\s.*/,'')
+      this.endTime = purifierClientVo.expireTime.replace(/\s.*/,'')
+      this.filterLongevity = purifierClientVo.filterLongevity
+      if(totalFlow.total_purified > 0 && totalFlow.total_tap > 0){
+        let Num = totalFlow.total_purified/totalFlow.total_tap * 100
+        this.utilizationRate = Num.toFixed(1);  //  Math.floor(Num * 10) / 10 不四舍五入取小数点后一位
+      }
+      this.testCanvas() //画图 拿到滤芯总流量之后才执行
+      this.$apply()
+    }).catch(() => { })
+  }
+  getTime(){
+    let timeNow = new Date().getTime();  // 获取当前时间
+    let timeDown = dateFormat(timeNow,'yyyy/MM/dd hh:mm:ss')
+    this.timeDown = timeDown
+    this.$apply();
+  }
+  onReady(){
+  }
+  onLoad(option){
+    setInterval(()=>{
+      this.getTime()
+    },1000)
+    this.id = option.id
+    if (option.is){
+      this.is = option.is
+    }
+    this.apiWaterInfoFA(this.apiWaterInfoFA.bind(this))
+    this.apiFilterInfoFA(this.apiFilterInfoFA.bind(this))
+  };
+  onShow() {
+  }
+  onPullDownRefresh(){
+    this.apiWaterInfoFA(this.apiWaterInfoFA.bind(this))
+    this.apiFilterInfoFA(this.apiFilterInfoFA.bind(this))
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+      // miniPro.showToast("刷新成功")
+    },1500)
+  };
+}
+</script>
+<style lang="scss">
+@import './index.scss';
+
+</style>

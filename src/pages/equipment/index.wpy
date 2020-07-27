@@ -1,0 +1,203 @@
+<template>
+  <view class="equipment-ctner container-same">
+    <wxs src="../../utils/filter.wxs" module="tools"></wxs>
+    <view class="e-index">
+      <view class="e-item" wx:if="{{pageList.length > 0}}" wx:for="{{pageList}}" wx:key="id" >
+        <i-swipeout class="i-swipe-index"  i-class="i-swipeout-demo-item"
+                    actions="{{actions}}" @change.stop="handClick({{item}},{{actions.tap}})">
+          <view slot="content">
+            <view class="i-swipeout-image" style="background:#ff9900;">
+              <i-icon size="20" color="#FFFFFF" type="coupons_fill" />
+            </view>
+            <view class="i-swipeout-des">
+              <view class="e-content" catchtap="togoInfo({{item}})">
+                <view class="e-left">
+                  <image src="../../images/equiment1.png"></image>
+                  <view class="e-text">
+                    <view>{{item.name}}</view>
+                    <block wx:if="{{item.state == 2 || item.state == 3}}">
+                      <view>状态：{{item.purifierHeartbeat.onlineState.desc}}</view>
+                    </block>
+
+                  </view>
+                </view>
+                <view class="e-right"><image src="../../images/unfold.png"></image></view>
+              </view>
+            </view>
+          </view>
+
+        </i-swipeout>
+      </view>
+      <view class="e-item e-demo"  @tap="togoDemoInfo({{demoList}})"> <!-- 演示设备 -->
+        <view class="e-content-item">
+          <view class="e-left">
+            <image src="../../images/equiment1.png"></image>
+            <view class="e-text">
+              <view style="color: #F13939;">{{demoList.name}}</view>
+              <block wx:if="{{demoList.state == 2 || demoList.state == 3}}">
+                <view>状态：{{demoList.purifierHeartbeat.onlineState.desc}}</view>
+              </block>
+            </view>
+          </view>
+          <view class="e-right"><image src="../../images/unfold.png"></image></view>
+        </view>
+      </view>
+    </view>
+    <view class="e-desc">
+      <view>
+        <image src="../../images/add_equir.png" @tap="addEquir"></image>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import '../../common/js/authProcess.js';
+import {
+  apiGetBindingF, apiGetDemoF, apiunbindEquipF,apiGetByShareF
+} from '../../services/equipment/index';
+import miniPro from '@/utils/wepy-pro.js';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '设备',
+    "usingComponents": {
+      "i-swipeout": "../../components/iviewUI/swipeout/index"
+    }
+  };
+  components = {
+  };
+  data = {
+    id:'',
+    actions : [
+      {
+        name : '编辑',
+        tap:'edit',
+        width : 50,
+        color : '#FFF',
+        fontsize : '22',
+        background : '#515151'
+      },
+      {
+        name : '删除',
+        tap:'del',
+        color : '#fff',
+        fontsize : '22',
+        width : 50,
+        background : '#F13939'
+      }
+    ],
+    pageList:[],
+    demoList:{}
+  };
+  methods = {
+    handClick(item,e){
+      console.log(item)
+      console.log(e)
+      if(item.bindType == 1 || item.bindType==2){ //主绑定
+        if (e.detail.index == 0 ){
+          wepy.navigateTo({ url: `/pages/packequipment/equipEdit/index?id=${item.id}` });
+        }
+        if (e.detail.index == 1){
+          miniPro.showToast("您当前是主绑定状态，无法解绑设备")
+          return;
+        }
+      }else{ //子绑定
+        if (e.detail.index == 0 ){
+          miniPro.showToast("您当前是子绑定状态，无法编辑设备")
+        }
+        if (e.detail.index == 1){
+          console.log("解绑")
+          let t = this
+          t.id = item.id
+          miniPro.showConfirm({
+            title: '提示',
+            content: '确定解绑吗？',
+            callback(flag) {
+              if (!flag) return
+              t.unbindEquip(t.unbindEquip.bind(this))
+            }
+          })
+        }
+      }
+    },
+    togoInfo(e){
+      wepy.navigateTo({ url: `/pages/packequipment/equipInfo/index?id=${e.id}` });
+    },
+    togoDemoInfo(e){  //is参数进入页面表示为演示设备   禁用按钮切换
+      wepy.navigateTo({ url: `/pages/packequipment/equipInfo/index?id=${e.id}&is=1` });
+    },
+    addEquir(){
+      // 允许从相机和相册扫码
+      wx.scanCode({
+        success (res) {
+          miniPro.showToast(JSON.stringify(res))
+          console.log(res.result)
+          wepy.navigateTo({ url: `/pages/packequipment/addEquip/index?qrCode=${res.result}` });
+        },
+        fail (){ //接口调用失败的回调函数
+          console.log("失败1")
+          miniPro.showToast("扫描失败1")
+          wepy.navigateTo({ url: '/pages/packequipment/scanFail/index' });
+        },
+        complete (){  //接口调用结束的回调函数（调用成功、失败都会执行）
+          console.log("完成")
+          miniPro.showToast("完成")
+        }
+      })
+    }
+  };
+  unbindEquip(fun) { //子绑定解除设备绑定
+    let id = this.id
+    apiunbindEquipF(id,fun).then((result) => {
+      miniPro.showToast("解绑成功！")
+      setTimeout(()=>{
+        this.apiGetBindingFA(this.apiGetBindingFA.bind(this))  //当前用户绑定的所有设备
+      },1500)
+    }).catch(() => { });
+  }
+  apiGetBindingFA(fun) {  //当前用户绑定的所有设备
+    apiGetBindingF(fun).then(reslut => {
+      this.pageList = reslut
+      this.$apply()
+    }).catch(() => { })
+  }
+  apiGetDemoFA(fun) {  //演示设备
+    apiGetDemoF(fun).then(reslut => {
+      this.demoList = reslut
+      this.$apply()
+    }).catch(() => { })
+  }
+  apiGetByShareFA(fun) {
+    var _self = this
+    apiGetByShareF(this.qrCode,fun).then((result) => {
+      miniPro.showToast("绑定成功")
+      this.apiGetBindingFA(this.apiGetBindingFA.bind(this))
+    }).catch(() => {});
+  }
+  async onLoad(option){
+    await this.apiGetDemoFA(this.apiGetDemoFA.bind(this))  //演示设备
+    if(option.scene){//小程序码扫码进入页面  绑定
+      let qrCode = option.scene
+      console.log(option)
+      this.qrCode = qrCode
+      wepy.$instance.globalData.qrCode = qrCode || ''
+      this.apiGetByShareFA(this.apiGetByShareFA.bind(this))
+    }
+  }
+  async onShow(){
+    await this.apiGetBindingFA(this.apiGetBindingFA.bind(this))  //当前用户绑定的所有设备
+  }
+  onShareTimeline(res){ //分享到朋友圈
+    return {
+      title: '',
+      query: '',
+      imageUrl: ''
+    };
+  }
+}
+</script>
+<style lang="scss">
+@import './index.scss';
+</style>

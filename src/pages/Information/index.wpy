@@ -1,0 +1,375 @@
+
+<template>
+  <view class="Information-ctner container-same">
+    <wxs src="../../utils/filter.wxs" module="tools"></wxs>
+    <view class="cs-scroll-outer"> <!-- 水平导航栏 -->
+      <!-- 标题title-->
+      <view class="title-text">
+        <view class="nav" wx:for="{{titleList}}"
+              @tap='classifyA({{item}},{{index}})' wx:key="{{index}}">
+          <view class="nav-text">
+            <view class="nav-1 {{currentIndex == index ? 'item-class' : ''}}">
+              <view>{{item.text}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="cat-container"> <!--title对应内容content -->
+        <scroll-view scroll-y="true" style="height:{{height + 1000}}rpx" @scrolltolower="loadMore" >
+          <view class="cat-item-ctner" wx:for="{{dataList}}" wx:key="id"
+                @tap="toInfo({{item}})">
+                  <view class="t1">
+                    <image src="{{item.taleCover}}"></image>
+                  </view>
+                  <view class="t2">
+                    <view>{{item.taleName}}</view>
+                    <view>{{item.createTime}}</view>
+                    <view>
+                      <text>阅读 {{item.readCount}}</text>
+                      <text>点赞 {{item.likeCount}}</text>
+                    </view>
+                  </view>
+                </view>
+            <view style="padding: 20rpx 0;border-top:1rpx solid #EEE;text-align: center">
+              没有更多记录了！
+            </view>
+        </scroll-view>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import miniPro from '@/utils/wepy-pro.js';
+import { apiGetInfoListF } from '../../services/information'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '资讯'
+  };
+  components = {
+  };
+
+  mixins = [];
+
+  data = {
+    height:wx.getSystemInfoSync().screenHeight,
+    dataList:[],
+    pageParams: {
+      type:'',
+      offset: 0,
+      limit: 10,
+      hasMore:false,
+      page: 0,
+    },
+    currentIndex: 0,
+    titleList:[
+      {text:"全 部",type:0},
+      {text:"行业资讯",type:1},
+      {text:"技术创新",type:2},
+      {text:"净饮水常识",type:3},
+    ]
+  };
+  methods = {
+    toInfo(e){
+      wepy.navigateTo({ url: `/pages/packeInformation/taleDetail/index?id=${e.id}` })
+    },
+    classifyA(item, index) {
+      if (this.currentIndex == index) return
+      this.currentIndex = index;
+      if(index == 0){
+        this.pageParams.type = ""
+      }else{
+        this.pageParams.type = index
+      }
+      this.pageParams.offset = 0
+      this.pageParams.limit = 10
+      this.dataList = []
+      this.apiGetInfoListFA(this.apiGetInfoListFA.bind(this))
+    },
+    loadMore() {
+      if (!this.pageParams.hasMore) return
+      let offset = this.pageParams.offset;
+      if(offset == 0){
+        offset = this.pageParams.limit;
+      }else{
+        offset = offset + this.pageParams.limit;
+      }
+      this.pageParams.offset = offset;
+      this.apiGetInfoListFA(this.apiGetInfoListFA.bind(this))
+    },
+  }
+  apiGetInfoListFA(fun) {
+    let params = {
+      limit: this.pageParams.limit,
+      offset: this.pageParams.offset,
+      type:this.pageParams.type
+    }
+    apiGetInfoListF(params, fun).then((result) => {
+      let { rows, last } = result
+      this.pageParams.hasMore = !last
+      this.dataList = this.dataList.concat(rows)
+      this.dataList1 = [
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        },
+        {
+          "id": 14,
+          "createTime": "2020-05-19 11:16:52",
+          "updateTime": "2020-06-08 11:24:35",
+          "type": 1,
+          "taleName": "测试文化衍生故事",
+          "taleCover": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/cover/200519111649N3ofkT.jpg",
+          "taleContent": "<p><img src=\"https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/detail/200519111612YIfHEG.jpg\" title=\"u=79176857,2883427439&fm=26&gp=0.jpg\" alt=\"u=79176857,2883427439&fm=26&gp=0.jpg\"/></p>",
+          "taleSort": 14,
+          "status": 1,
+          "readCount": 1,
+          "likeCount": 0,
+          "authorName": "喵喵咪呀",
+          "authorHead": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/tale/head/200519111649byBT2j.png"
+        }
+      ]
+      this.$apply()
+    }).catch(() => {
+      miniPro.showToast('提现失败')
+    })
+  }
+
+
+  watch = {
+  }
+  onLoad(){
+    this.apiGetInfoListFA(this.apiGetInfoListFA.bind(this))
+
+  }
+  async onShow() {
+
+  }
+}
+</script>
+<style lang="scss">
+@import './index.scss';
+</style>

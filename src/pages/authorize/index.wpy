@@ -1,0 +1,135 @@
+<template>
+  <view class='auth-container'>
+    <view class='auth-logo auth-same'>
+      <image src='../../images/logo_b.png'></image>
+    </view>
+    <view class='autn-name auth-same'>授权页面</view>
+    <view class='auth-description auth-same'>申请获取您的公开信息（昵称、头像等）</view>
+    <view class='auth-btn auth-same'>
+      <button class="btn icx-clear-after-border"  lang="zh_CN" @tap="cancelUserInfo">拒绝</button>
+      <button class="btn icx-clear-after-border" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">允许</button>
+    </view>
+  </view>
+  <modal wx:if="{{showModal}}">
+    <view class="modal-content" id="apply" >
+      <view class="content-exchang">
+        <view class="btn-content">
+          <view class="btn-index">
+            <view class="text2">为了给您提供更好的服务</view>
+            <view class="text3">请在稍后的提示框中点击允许~</view>
+          </view>
+        </view>
+        <view class="btn-bottom">
+          <button @tap="handleClose1">取消</button>
+          <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">确定</button>
+        </view>
+      </view>
+    </view>
+  </modal>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+import miniPro from '../../utils/wepy-pro';
+import Auth from '../../common/js/authProcess.js';
+import { apiInfoF } from '../../services/index'
+import { apiPasePhoneF } from '../../services/login';
+import modal from '@/components/modal/index'
+export default class Authorize extends wepy.page {
+  config = {
+    // navigationBarBackgroundColor: '#FFF'
+  };
+  components = {
+    modal:modal
+  }
+  data = {
+    showModal:false,
+    sessionKey:''
+  };
+  events = {
+    'showModal': (value) => {
+      console.log(value)
+      this.showModal = value
+      this.$apply()
+    },
+  }
+  methods = {
+    cancelUserInfo(){
+      miniPro.showToast("本次取消授权无法查看更多内容哦！")
+      setTimeout(() => {
+        wepy.switchTab({ url: '/pages/index/index' });
+      },1500)
+    },
+    handleClose1(){
+      this.showModal = false //后期测试完关掉这行
+      miniPro.showToast("本次取消绑定无法提供更多服务哦！")
+    },
+
+  };
+  getPhoneNumber(e) {
+    console.log(e)
+    if (e.detail.errMsg == 'getPhoneNumber:fail user deny' || e.detail.errMsg == 'getPhoneNumber:fail:user deny') {  //拒绝授权
+      miniPro.showToast("拒绝授权无法为您提供更好的服务，请点击允许授权哦！")
+    }else{ //允许授权
+      let iv = e.detail.iv;
+      let encryptedData = e.detail.encryptedData;
+      let signature = this.$parent.globalData.userInfo.signature;
+      let rawData = this.$parent.globalData.userInfo.rawData;
+      let sessionKey = this.sessionKey
+      let param = {
+        signature:signature,
+        rawData:rawData,
+        encryptedData:encryptedData,
+        iv:iv,
+        sessionKey:sessionKey
+      }
+      apiPasePhoneF({ miniprogramParam: JSON.stringify(param) }).then(res => {
+        miniPro.showToast("绑定手机号成功")
+        setTimeout(() => {
+          wepy.navigateBack({ delta: 3 });
+        },2000)
+      }).catch(err => {
+      })
+    }
+  }
+
+  onGotUserInfo(e) {
+    let _auth = Auth.getInstance()
+    let { userInfo } = e.detail;
+    console.log(e)
+    if (userInfo) {
+      _auth.login(null, true).then(res => {
+        if (res == true) {
+          // wepy.$instance.globalData[EVENT_QUEUE_NAME].toDoEvent() 原先的
+          // let pages = getCurrentPages();//获取当前页面数
+          // let prevPage = pages[pages.length - 5]; // 上一级页面
+          this.apiInfoFA(this.apiInfoFA.bind(this))
+        }
+      })
+    } else {
+      wepy.navigateBack({ delta: 1 });
+    }
+  }
+  apiInfoFA(fun) {
+    let _self = this
+    apiInfoF(fun).then((result) => {
+      _self.sessionKey = result.sessionKey
+      console.log(result)
+      if (!result.phone){
+        _self.showModal = true
+      }else{
+        wepy.navigateBack({ delta: 3 });//返回的页面数，如果 delta 大于现有页面数，则返回到首页,  原先是 返回1层
+      }
+      this.$apply()
+    }).catch(() => { });
+  }
+  onLoad(){
+
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import './index';
+</style>

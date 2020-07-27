@@ -1,0 +1,185 @@
+<template>
+  <view class="cat-item-ctner"> <!-- {{orderDetails.length > 0?'cssHeight':''}} -->
+    <view class="cat-item" @tap="toOrderInfo({{subItem}})" wx:if="{{orderDetails.length > 0}}"
+          wx:for="{{orderDetails}}" wx:key='index' wx:for-item='subItem'>
+        <view class="order-status-order">
+          <text>{{subItem.createTime}}</text>
+          <text wx:if="{{subItem.stateEnum.key == 1}}">待支付</text>
+          <text wx:if="{{subItem.stateEnum.key == 2}}">已支付</text>
+          <text wx:if="{{subItem.stateEnum.key == 3}}">支付失败</text>
+          <text wx:if="{{subItem.stateEnum.key == 4}}">已完成</text>
+        </view>
+          <view class="goods-outer">
+            <view class='cat-m'>
+              <image src='{{subItem.goodsInfo.goodsIco}}' />
+            </view>
+            <view class="cat-m-t">
+              <view class='goods-name'>
+                {{subItem.goodsInfo.name}}
+              </view>
+              <view class="cat-m-R">
+                <view>
+                  ¥ {{subItem.goodsInfo.price}}
+                </view>
+                <view>
+                  x{{subItem.goodsNum}}
+                </view>
+              </view>
+            </view>
+
+          </view>
+
+    </view>
+    <noTip  wx:if="{{orderDetails.length == 0}}"></noTip>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { apiGetOrderListF } from '../../../services/mine';
+import noTip from '@/components/OrderNoDataTip/index'
+export default class myOrder extends wepy.page {
+  config = {
+    navigationBarTitleText: '新一代厨房专用智能净水器',
+    usingComponents: {
+      // 'van-action-sheet': '../../../components/vant/action-sheet/index',
+    }
+  };
+  components = {
+    noTip:noTip
+  }
+  data = {
+    orderDetails:[]
+  }
+  methods = {
+    toOrderInfo(e){
+      wepy.navigateTo( { url:`/pages/packageMine/sureOrder/index?orderId=${e.id}&key=${e.stateEnum.key}`} )
+    }
+  }
+  watch = {
+
+  }
+  apiGetOrderListFA(fun) {
+    apiGetOrderListF(fun).then(reslut => {
+      // let arr = [
+      //   {
+      //     "id": 6,
+      //     "createTime": "2020-06-15 15:34:48",
+      //     "updateTime": "2020-06-15 18:00:16",
+      //     "userId": 19305,
+      //     "openId": "oXos85CVRRj6_hIOWZAQuNPsP5CQ",
+      //     "goodsId": 1,
+      //     "goodsIco": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/goods/banner/200602134439VN3NI1.jpg",
+      //     "purifierType": "RHY-RO-600F",
+      //     "orderNo": "GM2020061515344700002",
+      //     "orderType": 2,
+      //     "goodsNum": 1,
+      //     "goodsPrice": 10,
+      //     "couponAmount": 0,
+      //     "freight": 0,
+      //     "payAmount": 10,
+      //     "orderDeliveryAddressId": 184,
+      //     "state": 3,
+      //     "remark": "测试",
+      //     "used": true,
+      //     "inUsing": true,
+      //     "goodsInfo": {
+      //       "id": 1,
+      //       "createTime": "2020-06-04 15:38:14",
+      //       "updateTime": "2020-06-15 15:34:21",
+      //       "purifierModel": "RHY-RO-600F",
+      //       "name": "瑞和源牌反渗透净水机标准4000L型",
+      //       "goodsIco": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/goods/banner/200602134439VN3NI1.jpg",
+      //       "marketPrice": 6200,
+      //       "price": 10,
+      //       "state": 2,
+      //       "shelfTime": "2020-06-04 15:39:40",
+      //       "deleteTime": "2020-06-04 15:39:52",
+      //       "stateEnum": {
+      //         "key": 2,
+      //         "value": "on_sale",
+      //         "desc": "发售"
+      //       }
+      //     },
+      //     "stateEnum": {
+      //       "key": 3, //1 待支付 2支付完成 3支付失败 4已完成（已绑定）
+      //       "value": "not_pay",
+      //       "desc": "未支付/支付失败",
+      //       "status": 3
+      //     },
+      //     "orderTypeEnum": {
+      //       "key": 2,
+      //       "value": "NORMAL",
+      //       "desc": "正常订单"
+      //     }
+      //   },
+      //
+      //   {
+      //     "id": 1,
+      //     "createTime": "2020-06-09 17:56:18",
+      //     "updateTime": "2020-06-15 18:00:16",
+      //     "userId": 19305,
+      //     "openId": "oXos85CVRRj6_hIOWZAQuNPsP5CQ",
+      //     "goodsId": 1,
+      //     "goodsIco": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/goods/banner/200602134439VN3NI1.jpg",
+      //     "purifierType": "RHY-RO-600F",
+      //     "orderNo": "SY2020060917561700003",
+      //     "orderType": 2,
+      //     "goodsNum": 1,
+      //     "goodsPrice": 0,
+      //     "couponAmount": 0,
+      //     "freight": 0,
+      //     "payAmount": 0,
+      //     "orderDeliveryAddressId": 179,
+      //     "state": 4,
+      //     "bindTime": "2020-06-09 18:37:32",
+      //     "remark": "测试",
+      //     "used": true,
+      //     "inUsing": true,
+      //     "trial": 7,
+      //     "goodsInfo": {
+      //       "id": 1,
+      //       "createTime": "2020-06-04 15:38:14",
+      //       "updateTime": "2020-06-15 15:34:21",
+      //       "purifierModel": "RHY-RO-600F",
+      //       "name": "瑞和源牌反渗透净水机标准4000L型",
+      //       "goodsIco": "https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/goods/banner/200602134439VN3NI1.jpg",
+      //       "marketPrice": 6200,
+      //       "price": 10,
+      //       "state": 2,
+      //       "shelfTime": "2020-06-04 15:39:40",
+      //       "deleteTime": "2020-06-04 15:39:52",
+      //       "stateEnum": {
+      //         "key": 2,
+      //         "value": "on_sale",
+      //         "desc": "发售"
+      //       }
+      //     },
+      //     "stateEnum": {
+      //       "key": 4,
+      //       "value": "completed",
+      //       "desc": "完成",
+      //       "status": 4
+      //     },
+      //     "orderTypeEnum": {
+      //       "key": 2,
+      //       "value": "NORMAL",
+      //       "desc": "正常订单"
+      //     }
+      //   }
+      // ]
+      this.orderDetails = reslut
+      this.orderDetails.forEach((val,index) => {
+        val.goodsInfo.price = (val.goodsInfo.price/100).toFixed(2)
+      })
+      this.$apply()
+    }).catch(() => { })
+  }
+  onLoad() {
+    this.apiGetOrderListFA(this.apiGetOrderListFA.bind(this))
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import './index.scss';
+</style>

@@ -1,0 +1,169 @@
+<template>
+  <view class='address-edit-ctner'>
+    <i-collapse name="{{name}}" accordion>
+      <i-collapse-item  name="name{{index}}"  wx:for="{{TimeArr}}" wx:for-item="item" wx:key="index"
+                        class="item" >
+        <view slot="title" class="item-title" @tap="timeInfo({{item}})">
+          <view >{{item.dateStr}}用水量</view>
+        </view> <!--自定义标题-->
+        <view slot="content" class="item-index {{List.length >= 4?'item-height':''}}">
+          <block wx:if="{{List.length > 0}}">
+            <view class="item-content"  hover-class="btn-hover"
+                  wx:for="{{List}}" wx:for-item="subItem">
+              <text>{{subItem.datePoint}}</text>
+<!--              <text style="margin:0 50rpx">自来水：{{subItem.flowTap}}L</text>-->
+              <text style="margin:0 50rpx;letter-spacing: 1rpx">净化水：{{subItem.flowPurified}}L</text>
+            </view>
+          </block>
+          <block wx:if="{{List.length == 0}}">
+            <view class="item-content">
+              <text>暂无用水记录</text>
+            </view>
+          </block>
+        </view>
+      </i-collapse-item>
+    </i-collapse>
+
+
+<!--    <view class="e-content" wx:for="{{List}}" wx:key="id" wx:if="{{List.length > 0}}">-->
+<!--      <view class="e-left">-->
+<!--        <view>{{item.createTime}}</view>-->
+<!--      </view>-->
+<!--      <view class="e-right">-->
+<!--        自来水：{{item.flowTap}} L-->
+<!--      </view>-->
+<!--      <view class="e-right">-->
+<!--        净化水：{{item.flowPurified}} L-->
+<!--      </view>-->
+<!--    </view>-->
+<!--    <view style="text-align: center;margin-top: 10px" wx:if="{{List.length == 0}}">今日暂无用水</view>-->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { apiUseWaterTodayF,apiGetAllTimeDataF } from '../../../services/equipment';
+import dateFormat from '../../../utils/base/dateFormat';
+export default class useWaterToday extends wepy.page {
+  config = {
+    navigationBarTitleText: '近期用水量',
+    navigationBarBackgroundColor: '#289DD6',
+    "usingComponents": {
+      "i-collapse": "../../../components/iviewUI/collapse/index",
+      "i-collapse-item": "../../../components/iviewUI/collapse-item/index"
+    }
+  };
+  components = {
+  };
+  data = {
+    id:'',
+    List:[],
+    TimeArr:[],
+    year:"2020",
+    month:"7",
+    day:"15"
+  }
+  computed = {
+
+  }
+  methods = {
+    timeInfo(e){
+      console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+      console.log(e.day)
+      this.year = e.year
+      this.month = e.month
+      this.day = e.day
+      this.apiUseWaterTodayFA(this.apiUseWaterTodayFA.bind(this))
+    }
+  }
+  apiGetAllTimeData(fun){  //近期总记录 时间
+    let param = {
+      days:7
+    }
+    apiGetAllTimeDataF(this.id,param,fun).then(reslut => {
+      this.TimeArr = reslut
+      let timeNow = new Date().getTime();  // 获取当前时间
+      let timeIndex = dateFormat(timeNow,'yyyy/MM/dd')
+      console.log(timeIndex)
+      let timeYear = timeIndex.split("/")[0]
+      let timeMonth = timeIndex.split("/")[1]
+      let timeDay = timeIndex.split("/")[2]
+      let t = this
+      this.TimeArr.forEach((val,index) => {
+        t.year = val.year
+        t.month = val.month
+        t.day = val.day
+        t.apiUseWaterTodayFA(t.apiUseWaterTodayFA.bind(this))
+        if(val.year == timeYear && val.month == timeMonth && val.day == timeDay){
+          val.dateStr = "今日"
+        }
+      })
+      this.$apply()
+    }).catch(() => { })
+
+  }
+
+  apiUseWaterTodayFA(fun) {  //具体某天时间用水量
+    let dataParam = {
+      year:this.year,
+      month:this.month,
+      day:this.day
+    }
+    apiUseWaterTodayF(this.id,dataParam,fun).then(reslut => {
+      // let arr = [
+      //   {
+      //     "id": 82,
+      //     "createTime": "2020-06-11 18:18:42",
+      //     "updateTime": "2020-06-11 18:18:42",
+      //     "purifierId": 8,
+      //     "userId": 19304,
+      //     "mac": "0865429043819007",
+      //     "crossDayState": 1,
+      //     "timeStampKey": "2312120b0614",
+      //     "datePoint": "2020-06-12 18:18:35",
+      //     "flowTap": 144,//原水   单位毫升ml
+      //     "flowPurified": 72,//净水
+      //     "tdsTap": 0,
+      //     "tdsPurified": 0,
+      //     "temperatureTap": 0,
+      //     "temperaturePurified": 0,
+      //     "weightTdsTap": 0,
+      //     "weightTdsPurified": 0,
+      //     "weightTemperatureTap": 0,
+      //     "weightTemperaturePurified": 0,
+      //     "mockTdsTap": 0.9,
+      //     "purifiedRate": 1,
+      //     "mockPurifiedRate": 1,
+      //     "mockTdsPurified": 0.5
+      //   },
+      // ]
+      this.List = reslut
+      // let data = []
+      this.List.forEach((val,index) => {
+        val.datePoint = val.datePoint.split(" ")[1]
+        val.flowTap = (val.flowTap/1000).toFixed(3)
+        val.flowPurified = (val.flowPurified/1000).toFixed(3)
+        // data.push(val.flowPurified)
+      })
+      // var arr = data;
+      // // for方法
+      // let sumData = []
+      // var sum = 0;
+      // for (var i = 0, len = arr.length; i < len; i++) {
+      //   console.log(arr[i])
+      //   sum += arr[i]
+      // }
+      // console.log('for', sum)
+      // console.log(sumData)
+      this.$apply()
+    }).catch(() => { })
+  }
+  onLoad(option) {
+    this.id = option.id
+    this.apiGetAllTimeData(this.apiGetAllTimeData.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

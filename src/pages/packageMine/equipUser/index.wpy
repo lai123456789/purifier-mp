@@ -1,0 +1,44 @@
+<template>
+  <view class='address-edit-ctner'>
+    <view class="e-content">
+      <view class="e-left">
+        <image src="../../../images/cart_light.png"></image>
+        <view class="e-text">
+          <view>谁谁谁的净水器</view>
+          <view>2020-9-9 加入</view>
+        </view>
+      </view>
+      <view class="e-right">
+        <image src="../../../images/icon_del@2x.png"></image>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+export default class AddressEdit extends wepy.page {
+  config = {
+    navigationBarTitleText: '用户'
+  };
+  components = {
+  };
+  data = {
+
+  }
+  computed = {
+
+  }
+  methods = {
+
+  }
+  onLoad(option) {
+
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

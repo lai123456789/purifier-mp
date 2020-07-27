@@ -1,0 +1,110 @@
+<template>
+  <view class='address-edit-ctner'>
+    <view class="caption-wrap">
+      <i-collapse name="{{name}}" accordion>
+        <i-collapse-item  name="name{{index}}"  wx:for="{{equipArr}}" wx:for-item="item" wx:key="index"
+        class="item" >
+          <view slot="title" class="item-title">
+            <view>{{item.name}}</view>
+          </view> <!--自定义标题-->
+          <view slot="content" class="item-index">
+            <view class="item-content"  hover-class="btn-hover"
+                  wx:for="{{item.purifierDailyMonth}}" wx:for-item="subItem"
+                  @tap="toReportInfo({{item}},{{subItem}})">
+              {{subItem.daily_m}}
+            </view>
+          </view>
+        </i-collapse-item>
+      </i-collapse>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import { getEquipListF } from '../../../services/equipment';
+
+export default class AddressEdit extends wepy.page {
+  config = {
+    navigationBarTitleText: '用水报告',
+    "usingComponents": {
+      "i-collapse": "../../../components/iviewUI/collapse/index",
+      "i-collapse-item": "../../../components/iviewUI/collapse-item/index"
+    }
+  };
+  components = {
+  };
+  data = {
+    equipArr:[],
+  }
+  computed = {
+
+  }
+  methods = {
+    toReportInfo(item,subItem){
+        wepy.navigateTo({ url: `/pages/packageMine/useWaterReportInfo/index?id=${item.id}&year=${subItem.daily_year}&month=${subItem.daily_month}` });
+    }
+  }
+  getEquipList(){
+    let self = this
+    getEquipListF().then(result => {
+      console.log(result)
+      self.equipArr = result
+      // self.equipArr = [
+      //   {
+      //     "id": 6,
+      //     "createTime": "2020-06-09 18:37:32",
+      //     "updateTime": "2020-06-10 11:04:03",
+      //     "name": "阳新家里的净水器",
+      //     "userId": 19305,
+      //     "mac": "0867458041755960",
+      //     "iccid": "38393836303434353034313843303432323537",
+      //     "model": "RHY-RO-600F",
+      //     "demoFlag": true,
+      //     "state": 2,
+      //     "powerState": "00",
+      //     "powerTime": "2020-06-09 18:37:32",
+      //     "valveState": "00",
+      //     "valveTime": "2020-06-09 18:37:32",
+      //     "activeTime": "2020-06-10 11:04:03",
+      //     "networkType": "01",
+      //     "filterLongevity": 4000,
+      //     "bindType": 2,
+      //     "businessId": 20,
+      //     "expireTime": "2023-06-16 18:37:32",
+      //     "purifierDailyMonth": [
+      //       {
+      //         "daily_m": "2020年06月",
+      //         "daily_month": "06",
+      //         "daily_year": "2020"
+      //       },
+      //       {
+      //         "daily_m": "2020年05月",
+      //         "daily_month": "05",
+      //         "daily_year": "2020"
+      //       },
+      //       {
+      //         "daily_m": "2020年02月",
+      //         "daily_month": "02",
+      //         "daily_year": "2020"
+      //       }
+      //     ],
+      //     "availableDays": 1094
+      //   },
+      // ]
+
+      self.$apply()
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  onLoad(option) {
+    this.getEquipList(this.getEquipList.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

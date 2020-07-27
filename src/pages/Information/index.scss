@@ -1,0 +1,98 @@
+@import '../../common/css/rpx.scss';
+@import '../../common/css/const.scss';
+@import '../../common/css/mixin.scss';
+page{
+    height: 100%;
+}
+.Information-ctner{
+  .cs-scroll-outer{
+    .title-text{
+      overflow: hidden;
+      padding: rpx(20) 0 0 rpx(20);
+      background: #FFFFFF;
+      width:100%;
+      white-space:nowrap;
+      display: flex;
+      justify-content: space-around;
+      .nav{
+        display:inline-block;
+        white-space:normal;
+        text-align:center;
+        margin-right: rpx(35);
+        .nav-text{
+          line-height: rpx(55);
+          .nav-1{
+            view:nth-of-type(1){
+              margin-bottom: rpx(10);
+              font-size: $size-30;
+              color: #000000;
+            }
+            view:nth-of-type(2){
+              line-height: rpx(40);
+              font-size: $size-24;
+              color: #666666;
+            }
+          }
+          .item-class {
+            border-bottom: rpx(4) solid $color-word-alarm;
+            view:nth-of-type(1){
+              color: $color-word-alarm;
+            }
+            view:nth-of-type(2){
+              color: $color-word-alarm;
+            }
+          }
+        }
+
+      }
+    }
+
+    .cat-container {
+      overflow: hidden;
+      scroll-view{
+        .cat-item-ctner{
+          padding: rpx(30);
+          display: flex;
+          border-bottom: rpx(1) solid #EEE;
+          .t1{
+            image{
+              width: rpx(250);
+              height: rpx(150);
+              border-radius: rpx(10);
+            }
+          }
+          .t2{
+            margin-left: rpx(40);
+            view:nth-of-type(1){
+              margin-top: rpx(10);
+              color: #333333;
+              font-size: rpx(28);
+              width: rpx(400);
+              @include text-line-over;
+            }
+            view:nth-of-type(2){
+              margin: rpx(50) 0 rpx(15) 0;
+              color: #999999;
+              font-size: rpx(20);
+            }
+            view:nth-of-type(3){
+              text{
+                color: #999999;
+                font-size: rpx(20);
+              }
+              text:nth-of-type(2){
+                margin-left: rpx(15);
+              }
+            }
+          }
+        }
+      }
+    }
+    //.cat-container::-webkit-scrollbar{
+    //  display: none;
+    //
+    //}
+
+  }
+
+}

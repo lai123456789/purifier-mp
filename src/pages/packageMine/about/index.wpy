@@ -1,0 +1,50 @@
+<template>
+  <view class='about-ctner'>
+    <view class="word word-index">
+      <text>东方净界品牌创始团队介绍</text>
+    </view>
+      <view class="word">
+          <text class="word-b">深圳净小龙科技有限公司，</text>
+        是研发家用净水器和商用净水设备的专业公司。开创性提出“节能环保节水智能净水器”的产品理念，在行业中创造性推出“长效免维护滤芯净水技术”、“节水贡献量”的环境保护主题，开创节能环保净水器的先河。目前投放市场的产品有：嵌入式反渗透智能净水系统、厨下式节水型反渗透智能净水器、大流量净水机、免安装台式净饮机、商用立式净饮机，更多高科技产品将不断推出。
+      </view>
+    <view class="word word-index">
+      <image src="../../../images/user3.jpg"></image>
+    </view>
+    <view class="word-introduce">
+      <text>
+        陈镜全，深圳净小龙科技有限公司创始人，专注于智能净水家电全系产品的研发设计，致力于把“东方净界”发展成为节水环保型智能净水家电创新品牌。
+      </text>
+    </view>
+    <view class="word word-index">
+      <image src="../../../images/user2.jpg"></image>
+    </view>
+    <view class="word-introduce">
+      <text>
+        杨征霖，1999年从事净水行业，2002年自主创业成立深圳市瑞和源水处理设备有限公司，深圳好甘净大健康产业科技有限公司CEO。20年专注净饮水行业2013年发明了变频节水净水机、物联网直饮水机，累计发明、实用专利50多项，发明的三变频节能净水机荣获2019年全球净水行业（上海）峰会泰利斯卓越产品奖。
+        深圳市瑞和源水处理设备有限公司成立于2002年，是一家集家用净水器、商用净水机研发制造公司。2013年成立研发事业部，历经6年研发取得了“三变频节能”技术解决了RO净水机浪费水、滤芯使用寿命短、累计获得净水机、开水机节能、节水发明、实用技术50多项。
+      </text>
+    </view>
+    <view class="word word-index">
+            <image src="../../../images/user1.jpg"></image>
+    </view>
+    <view class="word-introduce">
+      <text>
+        成家尧，90后产品人，连续创业者，从11年起从事智能硬件行业产品规划工作，目前担任深圳楚河网络科技有限公司CEO，成氏商城CEO。主导过百余款产品智能产品软硬件整体规划、落地，涉及智能制造、智能新零售、智能家居、智能燃气、打猎相机、智慧健康、智能水处理、社交电商、知识付费等领域，智能水处理领域曾服务国内外共计40余家净水机企业物联网净水机整体解决方案的设计规划、落地。
+        深圳楚河网络科技有限公司，成立于2012年，以赋能传统制造业为核心，为企业转型提供必要的物联网工具及平台服务，全球化PaaS、多场景SaaS云服务、软件库等，提供可靠有效的智能产品系统解决方案，快速实现传统制造业物联网化的行业价值。
+      </text>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class About extends wepy.page {
+  config = {
+    navigationBarTitleText: '关于我们'
+  };
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

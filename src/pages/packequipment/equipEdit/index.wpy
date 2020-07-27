@@ -1,0 +1,60 @@
+<template>
+  <view class='address-edit-ctner'>
+    <view class="ade-same" style="margin: 20rpx 0">
+      <view class="ade-a">设备名称</view>
+      <view class="ade-b">
+        <input value="{{name}}"  bindinput="bindNameInput" maxlength='200' class='icx-input' placeholder-class='icx-placeholder' placeholder="请输入设备名称" />
+      </view>
+    </view>
+      <button class="icx-btn-same-sure" @tap='saveA'>保存</button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import {
+  apiupdateEquipF
+} from '../../../services/equipment/index'
+
+export default class AddressEdit extends wepy.page {
+  config = {
+    navigationBarTitleText: '编辑'
+  };
+  components = {
+  };
+  data = {
+    id:"",
+    name:''
+  };
+  computed = {
+  }
+  methods = {
+    bindNameInput(e) {
+      console.log(e.detail.value)
+      this.name = e.detail.value
+    },
+    saveA() {
+        this.updateEquip(this.updateEquip.bind(this))
+    },
+  }
+  updateEquip(fun) {
+      let id = this.id
+      let param = {
+        name:this.name
+      }
+      apiupdateEquipF(id,param,fun).then((result) => {
+        miniPro.showToast("编辑设备名称成功！")
+        setTimeout(()=>{
+          wepy.switchTab({url:`/pages/equipment/index`})
+        },1500)
+      }).catch(() => { });
+    }
+  onLoad(option) {
+    this.id = option.id
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

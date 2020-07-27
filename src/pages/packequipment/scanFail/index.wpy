@@ -1,0 +1,50 @@
+<template>
+  <view class='scan-ctner'>
+      <view class="index">
+        <view class="mg1"><image src="../../../images/scanFail.png"></image></view>
+        <view class="w1 w2">网络不给力</view>
+        <view  class="w1">请再次刷新或检查网络</view>
+        <view class="btn1">
+          <view class="icx-btn-colorBg-whiteText" @tap="toScan">重试</view>
+        </view>
+        <view class="w2">
+          <view>在网络没有问题的情况下，还是没有绑定成功</view>
+          <view>请直接拨打电话：400-0688-096</view>
+        </view>
+      </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class About extends wepy.page {
+  config = {
+    navigationBarTitleText: '扫一扫'
+  };
+  data = {
+
+  }
+  methods = {
+    toScan(){
+      // 允许从相机和相册扫码
+      wx.scanCode({
+        success (res) {
+          console.log(res)
+        },
+        fail (){ //接口调用失败的回调函数
+          console.log("调用失败")
+        },
+        complete (){  //接口调用结束的回调函数（调用成功、失败都会执行）
+          console.log("完成")
+        }
+      })
+    }
+  }
+  onLoad(){
+
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

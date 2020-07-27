@@ -1,0 +1,262 @@
+{
+	"description": "项目配置文件",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"enhance": false,
+		"postcss": false,
+		"minified": true,
+		"newFeature": true,
+		"coverView": true,
+		"nodeModules": true,
+		"autoAudits": false,
+		"showShadowRootInWxmlPanel": true,
+		"scopeDataCheck": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"compileHotReLoad": false,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		},
+		"bundle": false,
+		"useIsolateContext": true,
+		"useCompilerModule": false,
+		"userConfirmedUseCompilerModuleSwitch": false
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.12.0",
+	"appid": "wx4681882df810cf7a",
+	"projectname": "purifier-mp",
+	"miniprogramRoot": "dist/",
+	"cloudfunctionTemplateRoot": "",
+	"watchOptions": {
+		"ignore": []
+	},
+	"debugOptions": {
+		"hidedInDevtools": []
+	},
+	"scripts": {},
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "首页",
+					"pathName": "pages/index/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "设备",
+					"pathName": "pages/equipment/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "资讯",
+					"pathName": "pages/Information/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 4,
+					"name": "我的",
+					"pathName": "pages/mine/index",
+					"query": "scene=channel#1000",
+					"scene": null
+				},
+				{
+					"id": 4,
+					"name": "确认订单",
+					"pathName": "pages/packageMine/sureOrder/index",
+					"query": "colorId=20191104112429988360&goodsId=20191104112429981555&goodsNumber=1&prepareType=2&specificationId=20191104112429993214",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "编辑设备地址",
+					"pathName": "pages/packequipment/equipEdit/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "更新模拟模式",
+					"pathName": "pages/index/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 7,
+					"name": "用户协议",
+					"pathName": "pages/packageMine/userAgreement/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "申请试用",
+					"pathName": "pages/packageIndex/applyAtrialForm/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "申请成功",
+					"pathName": "pages/packageIndex/applySuccess/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "管理收货地址",
+					"pathName": "pages/packageMine/addressList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "添加收货地址",
+					"pathName": "pages/packageMine/addressEdit/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "提交订单",
+					"pathName": "pages/packageMine/sureOrder/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "用户",
+					"pathName": "pages/packageMine/equipUser/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 14,
+					"name": "资讯详情",
+					"pathName": "pages/packeInformation/taleDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "支付成功",
+					"pathName": "pages/packageMine/paySuccess/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "用水详情",
+					"pathName": "pages/packageMine/useWaterReportInfo/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 17,
+					"name": "设备详情",
+					"pathName": "pages/packequipment/equipInfo/index",
+					"query": "id=10&is=1",
+					"scene": null
+				},
+				{
+					"id": 18,
+					"name": "试用服务协议",
+					"pathName": "pages/packageMine/serveAgreement/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "关于我们",
+					"pathName": "pages/packageMine/about/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "水质指标",
+					"pathName": "pages/packequipment/waterTarget/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "授权登录",
+					"pathName": "pages/authorize/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "扫码失败",
+					"pathName": "pages/packequipment/scanFail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "添加设备",
+					"pathName": "pages/packequipment/addEquip/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 24,
+					"name": "今日用水量",
+					"pathName": "pages/packequipment/useWaterToday/index",
+					"query": "id=6",
+					"scene": null
+				},
+				{
+					"id": 25,
+					"name": "用水报告",
+					"pathName": "pages/packageMine/useWaterReport/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "分享设备",
+					"pathName": "pages/packageMine/shareEquip/index",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

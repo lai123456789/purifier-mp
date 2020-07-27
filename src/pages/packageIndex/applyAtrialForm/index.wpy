@@ -1,0 +1,310 @@
+<template>
+  <view class='address-edit-ctner'>
+      <view class="ade-same">
+        <view class="ade-a">姓 名 ：</view>
+        <view class="ade-b">
+          <input value="{{addressObj.name}}" bindinput="bindPersonInput" maxlength='20' class='icx-input' placeholder-class='icx-placeholder' placeholder="请输入姓名" />
+        </view>
+      </view>
+      <view class="ade-same">
+        <view class="ade-a">电 话 ：</view>
+        <view class="ade-b">
+          <input value="{{addressObj.phone}}"  type='number' bindinput="bindPhoneInput" maxlength='11' class='icx-input' placeholder-class='icx-placeholder' placeholder="请输入联系电话" />
+        </view>
+      </view>
+      <view class="ade-same">
+        <view class="ade-a">地 址 ：</view>
+        <view class="ade-b">
+           <picker mode="multiSelector" range="{{pickerRegionRange}}" range-key="name" value="{{pickerSelect}}"
+                   bindchange="bindchange" bindcolumnchange="bindcolumnchange" style="color: #666666;margin-left: 18rpx">
+              {{showRegionStr}}
+            </picker>
+        </view>
+        <image class="ade-c" src='../../../images/unfold.png'></image>
+      </view>
+      <view class="ade-same">
+        <view class="ade-a">详细地址</view>
+        <view class="ade-b">
+          <input value="{{addressObj.address}}"  bindinput="bindAddressInput" maxlength='200' class='icx-input' placeholder-class='icx-placeholder' placeholder="请输入详细地址" />
+        </view>
+      </view>
+    <view class="ade-same">
+      <view class='cat-l cat-2' @tap="toggleCheckA">
+        <view>是否使用过净水器</view>
+        <image wx:if="{{check1}}" src='../../../images/selected.png'/>
+        <image wx:else src='../../../images/uncheck.png'/>
+      </view>
+      <view class='cat-l' @tap="toggleCheckB" wx:if="{{check1}}">
+        <view>是否正在使用净水器</view>
+        <image wx:if="{{check2}}" src='../../../images/selected.png'/>
+        <image wx:else src='../../../images/uncheck.png'/>
+      </view>
+    </view>
+    <view class="ade-same">
+      <view class="ade-a">备 注 ：</view>
+      <view class="ade-b">
+        <input value="{{addressObj.remark}}"  type='text' bindinput="bindRemarkInput"/>
+      </view>
+    </view>
+    <view class="b-index">
+      <view class="ade-bottom" @tap="toggleCheck_read">
+        <image wx:if="{{check_read}}" src='../../../images/selected.png'/>
+        <image wx:else src='../../../images/uncheck.png'/>
+        <view catchtap="toUserAgreement">
+          <text>请阅读</text>
+          <text>《试用服务协议》</text>
+        </view>
+      </view>
+      <button class="icx-btn-same-sure" @tap='saveA'>提交申请</button>
+    </view>
+
+  </view>
+  <i-modal title="授权订阅消息" visible="{{ visible1 }}" bind:ok="handleTrue" bind:cancel="handleClose1">
+    <view style="overflow: hidden">小程序申请向您推送试用申请审核结果通知</view>
+  </i-modal>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import {
+  apiAddressFindF,
+  apiAddressDeleteF,
+  apiAddressSaveF,
+  apiAddressUpdateF,
+  apiAddressByParentF,
+  apiFindOrderDetailF,
+  apiSubmitSaveF, wxSubscribeMessageF
+} from '../../../services/mine/index';
+
+export default class AddressEdit extends wepy.page {
+  config = {
+    // navigationBarBackgroundColor: '#09103b',
+    // navigationBarTextStyle: '#FFF',
+    navigationBarTitleText: '申请试用',
+    "usingComponents": {
+      "i-modal": "../../../components/iviewUI/modal/index"
+    }
+  };
+  components = {
+  };
+  data = {
+    visible1:true,
+    tmplIds:'',
+    check1:false,
+    check2:false,
+    check_read:false,
+    pickerRegionRange: [],
+    pickerSelect: [0, 0, 0],
+    showRegionStr: '省市区',
+    addressId: '',
+    addressData: {
+      shippingAddress: '广东省深圳市宝安区西乡劳动二队'
+    },
+    addressObj: {
+      province: '',
+      city: '',
+      district: '',
+      address: '',
+      name: '',
+      phone: '',
+      remark:'',
+      cityId: '',
+      checked: false
+    },
+    addressJoin: '',
+    parentId: 0,
+    childrenId: 0,
+    childrenColumn: '',
+    pObject: {},
+    cObject: {},
+    dObject: {},
+    districtId: 0,
+    apiAddressId:'',
+    tempEcNo:''
+  };
+  computed = {
+    addressJoin() {
+      return `${this.addressObj.province} ${this.addressObj.city}  ${this.addressObj.district}`
+    }
+  }
+  methods = {
+    handleTrue(){
+      this.visible1 = false
+      let tmplIds = this.tmplIds
+      console.log(tmplIds)
+      wx.requestSubscribeMessage({
+        tmplIds: tmplIds,
+        success (res) { console.log(res)},
+        fail(err){console.log(err)}
+      })
+      this.$apply()
+    },
+    handleClose1(){
+      miniPro.showToast("取消订阅无法为你提供更好的服务，请点击确定")
+    },
+    toggleCheckA(){
+      this.check1 = !this.check1
+    },
+    toggleCheckB(){
+      this.check2 = !this.check2
+    },
+    toggleCheck_read(){
+      this.check_read = !this.check_read
+    },
+    toUserAgreement(){
+      wepy.navigateTo({ url: `/pages/packageMine/userAgreement/index` })
+    },
+    switchChange(e) {
+      this.addressObj.checked = e.detail.value
+    },
+    bindPhoneInput(e) {
+      this.addressObj.phone = e.detail.value
+    },
+    bindRemarkInput(e) {
+      this.addressObj.remark = e.detail.value
+    },
+    bindPersonInput(e) {
+      this.addressObj.name = e.detail.value
+    },
+    bindAddressInput(e) {
+      this.addressObj.address = e.detail.value
+    },
+    saveA() {
+      console.log(this.addressObj)
+      if(this.check_read){
+        this.apiAddressSaveA(this.apiAddressSaveA.bind(this))  //提交姓名 电话 地址  接口返回addressId 然后再提交申请
+      }else{
+        miniPro.showToast("请先阅读勾选协议")
+      }
+    },
+    bindchange(e) {
+      const pObject = this.pickerRegionRange[0][e.detail.value[0]]
+      const cObject = this.pickerRegionRange[1][e.detail.value[1]]
+      const dObject = this.pickerRegionRange[2][e.detail.value[2]]
+      const showRegionStr = pObject.name + cObject.name + dObject.name
+      this.pObject = pObject
+      this.cObject = cObject
+      this.dObject = dObject
+      if (dObject.id) {
+        this.addressObj.cityId = dObject.id
+      } else if (cObject.id) {
+        this.addressObj.cityId = cObject.id
+      } else if (pObject.id) {
+        this.addressObj.cityId = pObject.id
+      }
+      this.showRegionStr = showRegionStr
+      this.$apply();
+    }
+  }
+  initRegionPicker () {
+    this.apiAddressProvinceFA(this.apiAddressProvinceFA.bind(this))
+  }
+  apiAddressProvinceFA(fun) {
+    apiAddressByParentF(this.parentId, fun).then((result) => {
+      let _pickerRegionRange = []
+      _pickerRegionRange.push(result)
+      _pickerRegionRange.push([{ name: '请选择' }])
+      _pickerRegionRange.push([{ name: '请选择' }])
+      console.log("_pickerRegionRange")
+      console.log(_pickerRegionRange)
+      this.pickerRegionRange = _pickerRegionRange
+      this.$apply()
+      this.bindcolumnchange({ detail: { column: 0, value: 0 } })
+    }).catch(() => { });
+  }
+  bindcolumnchange(e) {
+    const column = e.detail.column
+    const index = e.detail.value
+    const regionObject = this.pickerRegionRange[column][index]
+    if (column === 2) {
+      this.pickerRegionRange = this.pickerRegionRange
+      // this.setData({
+      //   pickerRegionRange: this.pickerRegionRange
+      // })
+      return
+    }
+    if (column === 1) {
+      this.pickerRegionRange[2] = [{ name: '请选择' }]
+    }
+    if (column === 0) {
+      this.pickerRegionRange[1] = [{ name: '请选择' }]
+      this.pickerRegionRange[2] = [{ name: '请选择' }]
+    }
+    // // 后面的数组全部清空
+    // this.data.pickerRegionRange.splice(column+1)
+    // 追加后面的一级数组
+    this.childrenId = regionObject.id
+    this.childrenColumn = column
+    this.$apply()
+    this.apiAddressCityFA(this.apiAddressCityFA.bind(this))
+  }
+   apiAddressCityFA(fun) {
+    apiAddressByParentF(this.childrenId, fun).then((result) => {
+      let column = this.childrenColumn
+      this.pickerRegionRange[column + 1] = result
+      this.$apply()
+      this.bindcolumnchange({ detail: { column: column + 1, value: 0 } })
+    }).catch(() => { });
+  }
+
+  apiAddressSaveA(fun) {  //提交姓名 电话 地址  获取返回的addressId  提交申请的时候传接口
+    apiAddressSaveF({
+      phone: this.addressObj.phone,
+      name: this.addressObj.name,
+      cityId: this.addressObj.cityId,
+      address: this.addressObj.address,
+      def: this.addressObj.checked ? 1 : 0
+    }, fun).then((result) => {
+      this.apiAddressId = result.id
+      setTimeout(() =>{
+        this.apiSubmitSaveA(this.apiSubmitSaveA.bind(this))
+      },100)
+    }).catch(() => { });
+  }
+
+  apiSubmitSaveA(fun) {    //提交申请
+    apiSubmitSaveF({
+      tempEcNo: this.tempEcNo,
+      addressId: this.apiAddressId,
+      used: this.check1,//是否使用过净水器
+      inUsing:  this.check2,//是否正在使用净水器
+      remark: this.addressObj.remark//备注
+    }, fun).then((result) => {
+      miniPro.showToast('申请试用成功')
+      setTimeout(() => {
+        wepy.redirectTo({ url:'/pages/packageIndex/applySuccess/index'})
+      }, 1500);
+    }).catch(() => { });
+  }
+
+  apiFindOrderDetailA(fun) {
+    let dataBase = {
+      prepareType:2,//2-表示试用
+      goodsId:this.goodsId//申请试用商品id
+    };
+    apiFindOrderDetailF(dataBase, fun).then((result) => {
+      this.tempEcNo = result.tempEcNo
+      this.$apply()
+    }).catch(() => { });
+  }
+  getSubscribeId(fun) {  //获取订阅消息id
+    // subscribe=1,设备异常通知
+    // subscribe=2,试用申请结果通知
+    wxSubscribeMessageF(2,fun).then(reslut => {
+      console.log(reslut)
+      this.tmplIds = reslut
+    }).catch(() => { })
+  }
+  onLoad(option) {
+    this.goodsId = option.goodsId
+    this.initRegionPicker() // 初始化省市区选择器
+    this.apiFindOrderDetailA(this.apiFindOrderDetailA.bind(this)) //收银台 prepare 接口 获取tempEcNo
+    this.getSubscribeId(this.getSubscribeId.bind(this)) //获取订阅消息id
+
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

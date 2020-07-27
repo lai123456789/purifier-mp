@@ -1,0 +1,87 @@
+<template>
+  <view class="withdrawal-record-ctner">
+    <scroll-view class="scroll-view" scroll-y="true" style="height:100%;" @scrolltolower="loadMore">
+      <view class="withdrawal-index" wx:for="{{recordList}}" wx:key="id" wx:if="{{recordList.length > 0}}">
+        <view class="withdrawal-left">
+          <view class="L1"><image src="https://zcmall-1259120104.cos.ap-guangzhou.myqcloud.com/ZC_mp_sources/images/20200514145034.png"></image></view>
+          <view class="L2">
+            <view>{{item.typeEnum.desc}}</view>
+            <view>{{item.createTime}}</view>
+          </view>
+        </view>
+        <view class="withdrawal-right">
+          <view>{{item.amount}}</view>
+        </view>
+      </view>
+      <view  wx:if="{{recordList.length == 0}}" class="none">
+        暂无账户变动记录
+      </view>
+      <view  wx:if="{{!pageParams.hasMore && recordList.length > 0}}"  class="none">
+        没有更多记录了！
+      </view>
+    </scroll-view>
+
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '@/utils/wepy-pro.js';
+import {
+  apiaccountRecordF
+} from '../../../services/mine/index'
+export default class accountRecord extends wepy.page {
+  config = {
+    navigationBarTitleText: '账户明细'
+  };
+  components = {
+  };
+  data = {
+    recordList:[],
+    pageParams: {
+      offset: 0,
+      limit: 10,
+      hasMore:false,
+      page: 0,
+    },
+  };
+  methods = {
+    loadMore() { // 加载更多
+      if (!this.pageParams.hasMore) return
+      let offset = this.pageParams.offset;
+      if(offset == 0){
+        offset = this.pageParams.limit;
+      }else{
+        offset = offset + this.pageParams.limit;
+      }
+      this.pageParams.offset = offset;
+      this.apiwithdrawRecordFA(this.apiwithdrawRecordFA.bind(this))
+    },
+  }
+  apiwithdrawRecordFA(fun) {
+    let params = {
+      limit: this.pageParams.limit,
+      offset: this.pageParams.offset
+    }
+    apiaccountRecordF(params, fun).then((result) => {
+      let { rows, last } = result
+      this.pageParams.hasMore = !last
+      this.recordList = this.recordList.concat(rows)
+      this.recordList.forEach((item,index) => {
+        item.amount = (item.amount/100).toFixed(2)
+      })
+
+      this.$apply()
+    }).catch(() => {
+      miniPro.showToast('提现失败')
+    })
+  }
+  onLoad(option) {
+    this.apiwithdrawRecordFA(this.apiwithdrawRecordFA.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>

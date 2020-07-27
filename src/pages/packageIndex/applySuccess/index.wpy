@@ -1,0 +1,57 @@
+<template>
+  <view class='applySuccess-ctner'>
+    <view class="top">
+      <view>还有<text class="t1">178</text>人正在排队，请耐心等待</view>
+      <view>试用状态：<text class="t2">待处理</text></view>
+    </view>
+<!--    <view class="content">-->
+<!--        <image src="../../../images/icon_check@2x.png"></image>-->
+<!--        <text>核对信息</text>-->
+<!--    </view>-->
+<!--    <view class="content-arr">-->
+<!--      <view>姓名：</view>-->
+<!--      <view>电话：</view>-->
+<!--      <view style="line-height: 40rpx">地址：广东省普宁市美塘镇长美村顶录下21号小区内</view>-->
+<!--      <view>是否使用过净水机：</view>-->
+<!--      <view>是否正在使用：</view>-->
+<!--      <view>备注：</view>-->
+<!--    </view>-->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import miniPro from '../../../utils/wepy-pro'
+import { getApplyResultF } from '../../../services/index';
+export default class ApplySuccess extends wepy.page {
+  config = {
+    navigationBarTitleText: '申请成功',
+    navigationBarBackgroundColor: '#FFF',
+    navigationBarTextStyle: 'black'
+  };
+  components = {
+  };
+  data = {
+
+  }
+  computed = {
+
+  }
+  getApplyResult(fun) {
+    console.log("哈哈哈哈")
+    getApplyResultF(fun).then(msg => {
+      this.Introduce = msg
+      this.$apply()
+    }).catch(() => { })
+  }
+  methods = {
+
+  }
+  onLoad() {
+    // this.getApplyResult(this.getApplyResult.bind(this))
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import './index'
+</style>
